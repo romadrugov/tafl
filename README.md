@@ -55,3 +55,7 @@ Debug builds now use `com.tafl.kingescape.test` and label TAFL Test for side-by-
 ## 0.8.2
 
 System/light/dark themes, saved preferences, live OS theme switching, and optional board movement/capture animations. System reduced-motion preferences are respected. Undo/Redo restore positions instantly. Android system bars follow the selected theme via Capacitor SystemBars; device verification still required.
+
+## 0.9.0
+
+Shared-device local two-player mode. Select opponent before game setup. Fixed board, opposite-facing turn indicators, compact local menus, single-ply undo/redo, and independent local/AI saves for each variant. Local moves never call the AI. All four variants and both themes supported.
