@@ -1,0 +1,32 @@
+/* Light parchment palette and motion preferences. The wooden board retains its contrast in both themes. */
+:root{color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light;--bg:#f6eddd;--panel:#fff9ef;--panel2:#f4e8d5;--text:#382c20;--muted:#77634c;--line:#d0b995;--gold:#be9656;--gold2:#a37b43;--gold3:#eacb8b;--dark:#352717;--danger:#b13f31;--accent:#547340;--win:#38713e;--lose:#a63730;--draw:#876820}
+:root[data-theme="light"] body{background:radial-gradient(1000px 450px at 50% -100px,#e8d5b7 0%,var(--bg) 55%);background-color:var(--bg)}
+:root[data-theme="light"] button:not(.sq):not(.primary),:root[data-theme="light"] select{background:#f0e4d1;border-color:#cbb38d;color:var(--text)}
+:root[data-theme="light"] button.primary{background:linear-gradient(#f0d69b,#d4ac68);color:#382b1b}
+:root[data-theme="light"] .brandMark{background:linear-gradient(#f1dbb4,#e5c99a);border-color:#b99a6d;box-shadow:0 5px 14px #785a2520}
+:root[data-theme="light"] .panel,:root[data-theme="light"] .sheet{background:linear-gradient(var(--panel),var(--panel2));border-color:var(--line);box-shadow:0 8px 24px #785a2520}
+:root[data-theme="light"] .slide{background:radial-gradient(ellipse at 50% 0,#fff8e8,#f2e3cb 75%);border-color:#c8ab80}
+:root[data-theme="light"] .chip.active,:root[data-theme="light"] .variantBtn.active{background:linear-gradient(#f3dcae,#e8c994)!important;border-color:#af8243!important;box-shadow:inset 0 0 0 1px #c79b58}
+:root[data-theme="light"] .sectionHead h2,:root[data-theme="light"] .ruleText,:root[data-theme="light"] .headline,:root[data-theme="light"] .labels,:root[data-theme="light"] .historyRow,:root[data-theme="light"] #log{color:var(--text)}
+:root[data-theme="light"] .counts>div{background:#fff8eb;border-color:var(--line)}
+:root[data-theme="light"] .aiLevel{color:#946729}
+:root[data-theme="light"] .settingsLine,:root[data-theme="light"] .historyRow,:root[data-theme="light"] details{border-color:var(--line)}
+:root[data-theme="light"] .sheetActions .danger{color:#a63730;border-color:#bf8176}
+:root[data-theme="light"] #exportText{background:#fffaf0}
+:root[data-theme="light"] #guidePage{background:var(--bg)}
+:root[data-theme="light"] .guideHead{background:#f1e4ce;border-color:var(--line)}
+:root[data-theme="light"] .guideHero{background:radial-gradient(ellipse at 50% 0,#f8e6bd,#f4e7d0 75%);border-color:#c6aa7e}
+:root[data-theme="light"] .guideHero p,:root[data-theme="light"] .guideRail figcaption,:root[data-theme="light"] .guideRuleHero p,:root[data-theme="light"] .guideCard p,:root[data-theme="light"] .guideDetails p{color:var(--muted)}
+:root[data-theme="light"] .guideMetrics div{background:#fff9efaa}
+:root[data-theme="light"] .guideMetrics b,:root[data-theme="light"] .guideKicker,:root[data-theme="light"] .guideDetails summary{color:#8d622d}
+:root[data-theme="light"] .guideVariant,:root[data-theme="light"] .guideCard,:root[data-theme="light"] .guideDetails{background:#fff8eb;border-color:var(--line)}
+:root[data-theme="light"] .guideRuleHero{background:linear-gradient(145deg,#f9e9cc,#efdfc5);border-color:#c6aa7e}
+:root[data-theme="light"] .guideFoot{color:var(--muted)}
+:root[data-theme="light"] .guideRail img{border-color:#c6aa7e;background:#e7d4b6}
+:root[data-theme="light"] .guideVariant .arrow{color:#9a713b}
+.settingHint{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:4px;max-width:220px}
+.settingsLine input{flex-shrink:0}
+.sq.movingCell{z-index:5;overflow:visible}.sq.movingCell .piece{will-change:transform;pointer-events:none}
+.sq .capturedGhost{position:absolute;top:12%;left:12%;width:76%;height:76%;z-index:4;pointer-events:none;will-change:transform,opacity}
+:root[data-motion="off"] *,:root[data-motion="off"] *::before,:root[data-motion="off"] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
