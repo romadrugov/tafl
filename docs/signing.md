@@ -1,6 +1,6 @@
 # Permanent Android signing
 
-The original prototype key was lost. Do not remove the old app until you are ready to lose or independently back up its local saves. TAFL Test has a separate application ID. Production uses `com.playtufl` from 0.9.2; the old app and test builds have independent data.
+The original prototype key was lost. Do not remove the old app until you are ready to lose or independently back up its local saves. TAFL Test has a separate application ID. Production uses `com.taflclub` from 0.9.3; the old app and test builds have independent data.
 
 ## One-time owner setup (macOS)
 
