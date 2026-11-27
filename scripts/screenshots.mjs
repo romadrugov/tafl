@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import {createServer} from 'node:http';import {readFile,mkdir} from 'node:fs/promises';import {resolve,extname} from 'node:path';import assert from 'node:assert/strict';
 const root=resolve('www');const server=createServer(async(req,res)=>{try{const p=resolve(root,'.'+(req.url==='/'?'/index.html':req.url.split('?')[0]));if(!p.startsWith(root+'/'))throw Error('path');res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.png':'image/png'})[extname(p)]||'application/octet-stream');res.end(await readFile(p))}catch{res.writeHead(404);res.end()}});await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;
-try{browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox']});const page=await browser.newPage({viewport:{width:390,height:790},deviceScaleFactor:1,isMobile:true,hasTouch:true,reducedMotion:'reduce'});let errs=[];page.on('pageerror',e=>errs.push(String(e)));await page.goto('http://127.0.0.1:'+server.address().port);await page.locator('.slide').first().waitFor();await mkdir('www/shots',{recursive:true});await mkdir('previews',{recursive:true});await page.screenshot({path:'www/shots/gallery.png'});await page.locator('.slide').first().locator('.newChoice').click();await page.locator('#setupStage').waitFor();await page.locator('#opponents [data-value="ai"]').click();await page.screenshot({path:'www/shots/setup.png'});await page.locator('#howToPlay').click();await page.locator('#guidePage').waitFor();assert.equal(await page.locator('.guideCard').count(),5);await page.locator('#guideBack').click();await page.locator('#sides [data-value="1"]').click();await page.locator('#play').click();await page.locator('#board .sq').first().waitFor();await page.screenshot({path:'www/shots/game.png'});// Exercise exact replay, multiple undo/redo, persistence, and branch invalidation.
+try{browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox']});const page=await browser.newPage({viewport:{width:390,height:790},deviceScaleFactor:1,isMobile:true,hasTouch:true,reducedMotion:'reduce'});const chooseSetting=async(id,value)=>{await page.locator('#'+id+'Picker').click();await page.locator('#pickerOptions button[data-value="'+value+'"]').click()};let errs=[];page.on('pageerror',e=>errs.push(String(e)));await page.goto('http://127.0.0.1:'+server.address().port);await page.locator('.slide').first().waitFor();await mkdir('www/shots',{recursive:true});await mkdir('previews',{recursive:true});await page.screenshot({path:'www/shots/gallery.png'});await page.locator('.slide').first().locator('.newChoice').click();await page.locator('#setupStage').waitFor();await page.locator('#opponents [data-value="ai"]').click();await page.screenshot({path:'www/shots/setup.png'});await page.locator('#howToPlay').click();await page.locator('#guidePage').waitFor();assert.equal(await page.locator('.guideCard').count(),5);await page.locator('#guideBack').click();await page.locator('#sides [data-value="1"]').click();await page.locator('#play').click();await page.locator('#board .sq').first().waitFor();await page.screenshot({path:'www/shots/game.png'});// Exercise exact replay, multiple undo/redo, persistence, and branch invalidation.
 await page.evaluate(()=>{level=0;start()});
 const snap=()=>page.evaluate(()=>JSON.stringify(hist[hist.length-1]));
 const play=async()=>{const m=await page.evaluate(()=>e.moves(hist.at(-1).b,human)[0]);await page.locator('#board .sq').nth(m[0]).click();await page.locator('#board .sq').nth(m[1]).click();await page.waitForFunction(()=>!busy);};
@@ -11,15 +11,15 @@ await page.locator('#redo').click();assert.equal(await snap(),one);await page.lo
 await page.locator('#undo').click();await page.reload();await page.locator('.slide').first().locator('.continueChoice').click();await page.locator('#board .sq').first().waitFor();assert.equal(await snap(),one);await page.locator('#redo').click();assert.equal(await snap(),two);
 await page.locator('#undo').click();await play();assert.equal(await page.locator('#redo').isDisabled(),true);
 console.log('Multi-round redo, exact snapshots, reload and branch invalidation OK');
-await page.locator('#menuBtn').click();await page.locator('#actionButtons button').filter({hasText:/^Rules$/}).click();await page.locator('#guidePage').waitFor();await page.locator('#guideBack').click();await page.reload();await page.locator('#settingsBtn').click();assert.deepEqual(await page.locator('#settingsModal .settingsLine label').evaluateAll(xs=>xs.map(x=>x.htmlFor)),['language','themeSelect','soundEnabled','animationEnabled']);await page.locator('#aboutBtn').click();assert.equal(await page.locator('#guideClose').count(),0);await page.locator('#guidePage').waitFor();assert.equal(await page.locator('.guideVariant').count(),4);await page.screenshot({path:'previews/about.png'});for(let i=0;i<4;i++){await page.locator('.guideVariant').nth(i).click();assert.equal(await page.locator('.guideCard').count(),i===3?7:5);if(i===0)await page.screenshot({path:'previews/rules.png'});await page.locator('#guideBack').click()}await page.locator('#guideBack').click();for(const locale of ['es','ru','en']){await page.locator('#language').selectOption(locale);await page.locator('#aboutBtn').click();assert.ok((await page.locator('#guideTitle').textContent()).length);await page.locator('#guideBack').click()}
+await page.locator('#menuBtn').click();await page.locator('#actionButtons button').filter({hasText:/^Rules$/}).click();await page.locator('#guidePage').waitFor();await page.locator('#guideBack').click();await page.reload();await page.locator('#settingsBtn').click();assert.deepEqual(await page.locator('#settingsModal .settingsLine label').evaluateAll(xs=>xs.map(x=>x.htmlFor)),['languagePicker','themeSelectPicker','soundEnabled','animationEnabled']);await page.locator('#aboutBtn').click();assert.equal(await page.locator('#guideClose').count(),0);await page.locator('#guidePage').waitFor();assert.equal(await page.locator('.guideVariant').count(),4);await page.screenshot({path:'previews/about.png'});for(let i=0;i<4;i++){await page.locator('.guideVariant').nth(i).click();assert.equal(await page.locator('.guideCard').count(),i===3?7:5);if(i===0)await page.screenshot({path:'previews/rules.png'});await page.locator('#guideBack').click()}await page.locator('#guideBack').click();for(const locale of ['es','ru','en']){await chooseSetting('language',locale);await page.locator('#aboutBtn').click();assert.ok((await page.locator('#guideTitle').textContent()).length);await page.locator('#guideBack').click()}
 // Appearance preferences: explicit, live system changes, reload persistence and guide colors.
-await page.locator('#themeSelect').selectOption('light');assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
+await chooseSetting('themeSelect','light');assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
 await page.screenshot({path:'previews/light-settings.png'});
 await page.locator('#aboutBtn').click();assert.equal(await page.locator('#guidePage').evaluate(x=>getComputedStyle(x).backgroundColor),'rgb(246, 237, 221)');await page.locator('#guideBack').click();
-await page.locator('#themeSelect').selectOption('dark');assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
-await page.locator('#themeSelect').selectOption('system');await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='light');await page.emulateMedia({colorScheme:'dark'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='dark');
-await page.locator('#themeSelect').selectOption('light');await page.locator('#animationEnabled').uncheck();await page.reload();assert.equal(await page.locator('html').getAttribute('data-theme'),'light');assert.equal(await page.locator('html').getAttribute('data-motion'),'off');
-await page.locator('#settingsBtn').click();assert.equal(await page.locator('#themeSelect').inputValue(),'light');assert.equal(await page.locator('#animationEnabled').isChecked(),false);
+await chooseSetting('themeSelect','dark');assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
+await chooseSetting('themeSelect','system');await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='light');await page.emulateMedia({colorScheme:'dark'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='dark');
+await chooseSetting('themeSelect','light');await page.locator('#animationEnabled').uncheck();await page.reload();assert.equal(await page.locator('html').getAttribute('data-theme'),'light');assert.equal(await page.locator('html').getAttribute('data-motion'),'off');
+await page.locator('#settingsBtn').click();assert.equal(await page.locator('#themeSelectValue').textContent(),'Light');assert.equal(await page.locator('#animationEnabled').isChecked(),false);
 await page.locator('#animationEnabled').check();await page.emulateMedia({reducedMotion:'no-preference'});await page.waitForFunction(()=>document.documentElement.dataset.motion==='on');await page.locator('#closeSettings').click();
 // Test actual animation geometry and capture ghost on a controlled Brandubh position.
 await page.evaluate(()=>{stop();mode='brandubh';human=1;level=0;e=Engine(mode);hist=[e.start()];future=[];showGame()});
@@ -67,9 +67,9 @@ console.log('Statistics filters, separate local record, undo/redo idempotency an
 // reset by selection, no animation charge, timeout, saved remaining time.
 await page.setViewportSize({width:390,height:790});
 await page.locator('.slide').first().locator('.newChoice').click();
-assert.equal(await page.locator('#clockChoices [data-value="0"]').getAttribute('aria-pressed'),'true');
+assert.equal(await page.locator('#clockPanel').isHidden(),true);assert.equal(await page.locator('#clockChoices [data-value="0"]').getAttribute('aria-pressed'),'true');
 await page.locator('#opponents [data-value="local"]').click();
-await page.locator('#clockChoices [data-value="5"]').click();await page.screenshot({path:'previews/clock-setup.png'});
+assert.equal(await page.locator('#clockPanel').isVisible(),true);await page.locator('#clockChoices [data-value="5"]').click();await page.screenshot({path:'previews/clock-setup.png'});
 await page.evaluate(()=>{clockChoice=5;mode='brandubh';opponent='local';start()});
 assert.equal(await page.locator('#blackLocalClock').isVisible(),true);assert.equal(await page.locator('#undo').isHidden(),true);assert.equal(await page.evaluate(()=>clockSide),1);
 const beforeClocks=await page.evaluate(()=>clockSnapshot().remaining);
@@ -142,4 +142,30 @@ for(const kind of ['local','ai']){
  assert.equal(await page.evaluate(()=>matchPaused),false);
 }
 console.log('Pause menu, Back routing, frozen clocks, nested rules/history, cancelled AI worker and menu order OK');
+
+// UI polish regression: picker dimensions, custom selection, Back,
+ // setup header, conditional controls and pause-only game log.
+await page.evaluate(()=>{menu();$('settingsBtn').click()});
+const langRect=await page.locator('#languagePicker').boundingBox(),themeRect=await page.locator('#themeSelectPicker').boundingBox();
+assert.equal(langRect.width,themeRect.width);assert.equal(langRect.height,themeRect.height);
+assert.equal(await page.locator('#language').isHidden(),true);assert.equal(await page.locator('#themeSelect').isHidden(),true);
+await page.locator('#languagePicker').click();assert.equal(await page.locator('#pickerModal').isVisible(),true);
+assert.equal(await page.locator('#pickerOptions button[aria-pressed=true]').getAttribute('data-value'),'en');
+await page.screenshot({path:'previews/language-picker.png'});await page.evaluate(()=>window.taflBack());
+assert.equal(await page.locator('#pickerModal').isHidden(),true);assert.equal(await page.locator('#settingsModal').isVisible(),true);
+await chooseSetting('themeSelect','dark');await page.locator('#themeSelectPicker').click();await page.screenshot({path:'previews/dark-picker.png'});await page.locator('#pickerClose').click();
+await chooseSetting('themeSelect','light');await page.locator('#closeSettings').click();
+await page.evaluate(()=>setup('brandubh'));
+assert.equal(await page.locator('#brandHeader').isHidden(),true);assert.equal(await page.locator('#clockPanel').isHidden(),true);
+assert.equal(await page.locator('#howToPlay').textContent(),'Rules');assert.equal(await page.locator('#setupActions button').count(),1);
+const titleBox=await page.locator('.setupHead').boundingBox(),rulesBox=await page.locator('#howToPlay').boundingBox();assert(rulesBox.x>titleBox.x+titleBox.width/2);assert(rulesBox.y<100);
+await page.locator('#opponents [data-value="ai"]').click();assert.equal(await page.locator('#clockPanel').isVisible(),true);
+await page.screenshot({path:'previews/setup-polished.png'});
+await page.locator('#setupBack').click();assert.equal(await page.locator('#brandHeader').isVisible(),true);
+await page.evaluate(()=>{clockChoice=0;mode='brandubh';opponent='ai';human=1;start()});
+assert.equal(await page.locator('#historyBtn').count(),0);assert.equal(await page.locator('#gameActions').isHidden(),true);
+await page.locator('#menuBtn').click();assert.equal(await page.locator('#closeAction').isHidden(),true);assert.equal(await page.locator('#actionText').isHidden(),true);
+await page.screenshot({path:'previews/pause-polished.png'});await page.locator('#actionButtons button').filter({hasText:/^Restart$/}).click();
+assert.equal(await page.locator('#actionText').isVisible(),true);await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#actionText').isHidden(),true);
+console.log('Custom pickers, aligned fields, conditional time control, compact setup and clean pause UI OK');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}

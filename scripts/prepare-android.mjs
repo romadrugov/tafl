@@ -4,7 +4,7 @@ const run=(cmd,args)=>execFileSync(cmd,args,{stdio:'inherit',shell:process.platf
 const edit=(p,f)=>writeFileSync(p,f(readFileSync(p,'utf8')));
 mkdirSync('dist',{recursive:true});
 cpSync('www','dist',{recursive:true});
-edit('dist/index.html',html=>html.replace('href="icon.png"','href="icon.svg"').replaceAll('0.6.5','0.9.8').replace('</style>',`
+edit('dist/index.html',html=>html.replace('href="icon.png"','href="icon.svg"').replaceAll('0.6.5','0.9.9').replace('</style>',`
 /* Capacitor 8 SystemBars safe area fallback for older Android WebViews. */
 :root{--tafl-top:var(--safe-area-inset-top,env(safe-area-inset-top,0px));--tafl-bottom:var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px));--tafl-left:var(--safe-area-inset-left,env(safe-area-inset-left,0px));--tafl-right:var(--safe-area-inset-right,env(safe-area-inset-right,0px))}
 body{padding:var(--tafl-top) var(--tafl-right) var(--tafl-bottom) var(--tafl-left);background-color:var(--bg)}
@@ -15,7 +15,7 @@ main.inGame{min-height:calc(100dvh - var(--tafl-top) - var(--tafl-bottom))}
 if(!existsSync('android'))run('npx',['cap','add','android']);
 if(!readFileSync('android/app/build.gradle','utf8').includes('com.taflclub'))throw new Error('Generated Android project has stale package ID; remove generated android/ and regenerate.');
 run('npx',['cap','sync','android']);
-edit('android/app/build.gradle',s=>s.replace(/versionCode\s+\d+/,'versionCode 28').replace(/versionName\s+["'][^"']+["']/,'versionName "0.9.8"'));
+edit('android/app/build.gradle',s=>s.replace(/versionCode\s+\d+/,'versionCode 29').replace(/versionName\s+["'][^"']+["']/,'versionName "0.9.9"'));
 // Test variant installs beside the production app and never overwrites existing saves.
 edit('android/app/build.gradle',s=>s.includes('applicationIdSuffix')?s:s.replace(/buildTypes\s*\{/, 'buildTypes {\n        debug { applicationIdSuffix ".test" }'));
 mkdirSync('android/app/src/debug',{recursive:true});

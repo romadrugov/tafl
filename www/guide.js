@@ -10,9 +10,9 @@ const el=(tag,cls,txt)=>{let x=document.createElement(tag);if(cls)x.className=cl
 const page=el('section');page.id='guidePage';page.hidden=true;page.setAttribute('role','dialog');page.setAttribute('aria-modal','true');page.innerHTML='<div class="guideHead"><button id="guideBack">‹</button><h2 id="guideTitle"></h2></div><div class="guideScroll" id="guideScroll"></div>';document.body.append(page);
 let source=null,kind='about',selected='tablut',fromAbout=false;
 const scroll=$('guideScroll');
-function labels(){ $('aboutBtn').textContent=L().about;$('howToPlay').textContent=L().how;$('guideBack').setAttribute('aria-label',L().return);}
+function labels(){ $('aboutBtn').textContent=L().about;$('howToPlay').textContent=t('rules');$('guideBack').setAttribute('aria-label',L().return);}
 function sec(title){let s=el('section','guideSection');s.append(el('h3','',title));scroll.append(s);return s}
-function show(){page.hidden=false;scroll.scrollTop=0;scroll.style.animation='none';void scroll.offsetWidth;scroll.style.animation='';$('guideTitle').textContent=kind==='about'?L().about:L().how;}
+function show(){page.hidden=false;scroll.scrollTop=0;scroll.style.animation='none';void scroll.offsetWidth;scroll.style.animation='';$('guideTitle').textContent=kind==='about'?L().about:t('rules');}
 function diagram(type,strong=false,edge=false){
 const ns='http://www.w3.org/2000/svg';const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 150 150');svg.setAttribute('class','guideDiagram');svg.setAttribute('aria-hidden','true');
 function shape(tag,attrs){let x=document.createElementNS(ns,tag);for(let [k,v] of Object.entries(attrs))x.setAttribute(k,v);svg.append(x);return x}
@@ -33,7 +33,7 @@ function card(parent,n,title,txt,type,strong=false,edge=false){let c=el('article
 function about(){kind='about';scroll.replaceChildren();const l=L(),hero=el('div','guideHero');hero.innerHTML='<img src="icon.svg" alt=""><div class="guideKicker"></div><h1>TAFL</h1><p></p><div class="guideMetrics"></div>';hero.querySelector('.guideKicker').textContent=l.overview;hero.querySelector('p').textContent=l.intro;for(let [v,label] of [['4',l.variants],['3',l.levels],['✓',l.offline]]){let d=el('div');d.append(el('b','',v),el('small','',label));hero.querySelector('.guideMetrics').append(d)}scroll.append(hero);
 let shots=sec(l.screens),rail=el('div','guideRail');['gallery','setup','game'].forEach((name,i)=>{let f=el('figure'),img=el('img');img.src='shots/'+name+'.png';img.alt=l.shots[i];img.loading='lazy';f.append(img,el('figcaption','',l.shots[i]));rail.append(f)});shots.append(rail);
 let list=sec(l.choose);for(let k of modes){let b=el('button','guideVariant'),d=el('div');d.append(el('b','',variants[k].title),el('small','',sub(k)),el('small','',t(k+'Desc')));b.append(preview(k),d,el('span','arrow','›'));b.onclick=()=>rules(k,true);list.append(b)}
-let footer=el('div','guideFoot',l.features+' · 0.9.8');scroll.append(el('p','guideFoot',l.reconstruction),footer);show()}
+let footer=el('div','guideFoot',l.features+' · 0.9.9');scroll.append(el('p','guideFoot',l.reconstruction),footer);show()}
 function rules(k,back=false){kind='rules';selected=k;fromAbout=back;scroll.replaceChildren();const l=L(),v=variants[k],strong=v.n===11,edge=k==='tablut';const hero=el('div','guideRuleHero'),d=el('div');d.append(el('div','guideKicker',sub(k)),el('h3','',v.title),el('p','',t(k+'Desc')));hero.append(preview(k),d);scroll.append(hero);
 let section=sec(l.how);card(section,1,l.move,l.moveText,'move');card(section,2,l.capture,l.captureText,'capture');card(section,3,l.escape,edge?l.escapeEdge:l.escapeCorner,'escape',strong,edge);card(section,4,l.king,strong?l.strongText:l.weakText,'king',strong,edge);card(section,5,l.special,edge?l.specialEdge:l.specialCorner,'special',strong,edge);
 if(k==='copenhagen'){card(section,6,l.shieldTitle,t('shield'),'shield',true,false);card(section,7,t('fortWin'),t('fortRule'),'fort',true,false)}

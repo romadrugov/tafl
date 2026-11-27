@@ -91,3 +91,7 @@ Android Back handled by Capacitor App plugin; in-game pause icon, shared pause s
 ## 0.9.8
 
 One shared pause menu in AI and local matches, ordered Resume, Restart, Game log, Rules, Save and exit, Exit without saving. Restart confirmation preserves pause, and Back from the confirmation returns to the menu. Production ID/signing unchanged.
+
+## 0.9.9
+
+Custom theme and language pickers with equal-sized fields, hidden time control until opponent choice, compact setup header and top-right Rules, simplified pause menu, and removed redundant board-bottom Game log. Existing saves and release signing preserved.

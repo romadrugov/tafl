@@ -141,3 +141,25 @@ main.localGame.timedGame .gameTop{grid-template-columns:1fr auto}
 /* Paused timed matches hide the position to avoid extra thinking time. */
 main.pausedGame.timedGame #boardWrap{filter:blur(9px);pointer-events:none;user-select:none}
 .gameTop #menuBtn svg{display:block;margin:auto}
+
+/* In-game language/appearance pickers: matched dimensions and theme-aware choices. */
+.settingsLine .settingPicker{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:0 0 min(46%,164px);width:min(46%,164px);min-width:0;height:44px;padding:0 12px;border-radius:14px;font-size:14px;text-align:left}
+.settingPicker span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.settingPicker svg{flex:0 0 18px;opacity:.8}
+#pickerModal{z-index:32;place-items:center}
+.pickerSheet{max-width:360px;border-radius:22px;padding:16px}
+#pickerOptions{display:grid;gap:8px}
+.pickerOption{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;border-radius:13px;padding:11px 14px;font-size:15px;text-align:left}
+.pickerOption[aria-pressed="true"]{border-color:var(--gold);background:var(--panel2);box-shadow:inset 0 0 0 1px var(--gold);font-weight:700}
+.pickerMark{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;border:1px solid var(--line);color:var(--text);font-size:13px;flex-shrink:0}
+.pickerOption[aria-pressed="true"] .pickerMark{background:var(--gold3);border-color:var(--gold);color:#382c20}
+main.setupOpen #setupStage{gap:8px}
+.setupStage .setupHead{flex:0 0 auto;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;padding:0 0 8px}
+.setupStage .setupHead>div{min-width:0;text-align:center}
+.setupStage .setupHead h2{font-size:clamp(17px,5vw,24px);overflow-wrap:anywhere}
+.setupStage .setupHead small{display:block;font-size:12px;margin-top:2px}
+.setupStage .setupHead #setupBack{width:44px;height:44px;padding:0}
+.setupStage .setupHead .setupRules{min-height:44px;padding:0 12px;font-size:13px;font-weight:650;border-radius:14px}
+#setupActions{padding-top:9px}
+#actionModal.pauseSheet .sheetHead{margin-bottom:14px}
+#actionModal.pauseSheet .sheetHead h3{font-size:21px}
