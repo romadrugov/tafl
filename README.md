@@ -7,7 +7,7 @@ Offline collection of Brandubh, Tablut, Hnefatafl (Fetlar-inspired) and Copenhag
 - `www/index.html`: current game (UI, rules, AI and translations).
 - `www/icon.svg`: launcher/web icon artwork.
 - `capacitor.config.json`: Capacitor 8; application ID `com.taflclub`.
-- `scripts/prepare-android.mjs`: generates the native Android project, copies web assets, adds system-bar safe areas and sets version 0.9.3 / code 23.
+- `scripts/prepare-android.mjs`: generates the native Android project, copies web assets, adds system-bar safe areas and sets version 0.9.4 / code 24.
 - `.github/workflows/android.yml`: builds debug APK, unsigned release APK and AAB on pushes to main or manual dispatch.
 
 The generated `android/` and `dist/` directories are not committed; regenerate them from source. For future native plugins, install dependencies and extend the preparation script or commit the generated native project deliberately.
@@ -32,7 +32,7 @@ See [GitHub Actions](https://github.com/romadrugov/tafl/actions) and download th
 
 ## Limitations
 
-This is a packaging migration, not a Play Store release. Native UI and installation still require device testing. Copenhagen exit forts and historical repetition rules still need validation. Ads, billing and Firebase are not integrated.
+This is a packaging migration, not a Play Store release. Native UI and installation still require device testing. Copenhagen exit forts are recognized using a conservative sufficient-condition proof, not exhaustive search. The threefold repetition policy is not the official Copenhagen perpetual-repetition rule. Ads, billing and Firebase are not integrated.
 
 ## License
 
@@ -71,3 +71,7 @@ First permanent signing setup (then using `com.playtufl`), with signed APK and A
 ## 0.9.3
 
 Final domain-based application ID `com.taflclub` (debug: `com.taflclub.test`), matching taflclub.com. Same permanent owner-controlled signing key; game unchanged. Android treats this as a separate app from earlier IDs.
+
+## 0.9.4
+
+Local completed-game statistics, filters, separate AI/local results, idempotent undo/redo accounting, ordered settings, single Back button in guide, and conservative Copenhagen exit-fort detection (official rule: https://aagenielsen.dk/copenhagen_rules.php). Final package `com.taflclub`, existing permanent key.

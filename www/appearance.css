@@ -75,3 +75,21 @@ main.localGame .seatInner{grid-template-columns:32px minmax(0,1fr) 32px;gap:9px}
 main.localGame .seatInner::after{content:'';width:32px}
 @media(max-height:480px){main.localGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 158px))}}
 @media(orientation:landscape) and (min-width:500px){main.localGame #game{padding-top:48px}main.localGame .gameTop{position:absolute;top:0;left:0;right:0}main.localGame .boardWrap{width:min(65vw,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 65px))}main.localGame .seatInner{grid-template-columns:1fr}.localSeat .seatInner::after{display:none}}
+
+/* Statistics shares the guide's full-screen navigation and both themes. */
+.headerTools{display:flex;gap:7px;align-items:center}
+#statsPage{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;background:var(--bg);color:var(--text);padding:var(--tafl-top,0px) var(--tafl-right,0px) var(--tafl-bottom,0px) var(--tafl-left,0px)}
+.statsScroll{flex:1;overflow:auto;width:min(100%,640px);margin:auto;padding:18px 16px 24px}
+.statsScroll h3{font-size:17px;margin:20px 0 10px}
+#statsFilters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);align-items:center;gap:8px 12px;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+#statsFilters label{font-size:13px;color:var(--muted)}#statsFilters select{width:100%;padding:9px 10px;font-size:13px}
+.statGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.statGrid>div{padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;gap:3px;min-width:0}
+.statGrid strong{font-size:25px;line-height:1.1;color:var(--text)}.statGrid small{font-size:12px;color:var(--muted)}
+#statsAi>div:last-child{grid-column:1/-1}
+.recentGame{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 2px;border-bottom:1px solid var(--line)}
+.recentGame strong,.recentGame small{display:block}.recentGame small{font-size:11px;color:var(--muted);margin-top:4px}
+.recentGame>span{font-size:12px;font-weight:700;text-align:right;max-width:38%}.statWin{color:var(--win)}.statLoss{color:var(--lose)}.statDraw{color:var(--draw)}
+.statsNote{font-size:12px;color:var(--muted);line-height:1.5;margin-top:20px}
+@media(max-width:350px){.headerTools{gap:4px}.headerTools .gear{width:40px;flex-basis:40px;height:40px}.brand{gap:8px}}
+:root[data-theme="light"] #statsPage .guideHead{background:var(--panel);border-color:var(--line)}

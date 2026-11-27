@@ -20,3 +20,4 @@
 @keyframes taflAppear{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}@keyframes taflFade{from{opacity:0}to{opacity:1}}@keyframes taflSheet{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media(max-width:340px){.guideCard{grid-template-columns:1fr 90px}.guideVariant{grid-template-columns:65px 1fr 15px}.guideVariant .preview{width:65px}.guideRuleHero h3{font-size:20px}}
+.guideHead::after{content:'';width:44px;height:1px}
