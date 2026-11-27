@@ -37,6 +37,8 @@ jobs:
           cd android
           chmod +x gradlew
           ./gradlew --no-daemon assembleDebug assembleRelease bundleRelease
+      - name: Verify debug APK signature
+        run: "$ANDROID_HOME/build-tools/36.0.0/apksigner verify --verbose --print-certs android/app/build/outputs/apk/debug/app-debug.apk"
       - name: Sign production APK and AAB if configured
         id: signing
         env:
@@ -80,7 +82,7 @@ jobs:
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
-          name: TAFL-0.9.0-android
+          name: TAFL-0.9.1-android
           path: |
             android/app/build/outputs/apk/debug/*.apk
             android/app/build/outputs/apk/release/*.apk

@@ -36,7 +36,7 @@
 .opponentChoice .opponentIcon{font-size:23px;line-height:1}.opponentChoice strong{font-size:15px}.opponentChoice small{font-weight:400;font-size:11px;color:var(--muted)}
 main.inGame.localGame{padding:6px 5px;max-width:100%;min-height:0;height:calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px));overflow:hidden}
 main.localGame #game{display:flex;min-height:0;justify-content:center;gap:5px;align-items:center}
-main.localGame .gameTop,main.localGame .counts,main.localGame .statusWrap,main.localGame #gameActions,main.localGame #labels,main.localGame #labels2,main.localGame #ranks{display:none!important}
+main.localGame .counts,main.localGame .statusWrap,main.localGame #gameActions,main.localGame #labels,main.localGame #labels2,main.localGame #ranks{display:none!important}
 main.localGame .boardWrap{padding:0;flex:0 0 auto;width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 130px));max-width:820px;margin:0 auto}
 main.localGame .board{border-width:4px}
 .localSeat{flex:1 1 0;min-height:48px;width:min(100%,820px);display:flex;justify-content:center;align-items:center;opacity:.72}
@@ -52,3 +52,26 @@ main.localGame .board{border-width:4px}
 #actionModal.fromTop{place-items:start center}#actionModal.fromTop .sheet{transform:rotate(180deg);animation:none!important}
 @media(max-height:480px){main.localGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 110px))}.seatInner{padding:3px 8px}.localSeat{min-height:43px}}
 @media(orientation:landscape) and (min-width:500px){main.localGame #game{flex-direction:row;gap:10px}main.localGame .boardWrap{width:min(65vw,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 16px))}.localSeat{min-width:0;width:auto}.seatInner{grid-template-columns:1fr;justify-items:center;padding:7px}.seatMenu{justify-self:center}.localTop{transform:rotate(90deg)}.localBottom{transform:rotate(-90deg)}}
+
+/* 0.9.1: shared toolbar; compact opponent selector. */
+#opponentPanel{width:100%;max-width:350px;align-self:center;padding:10px 12px;gap:6px;border-radius:16px}
+#opponentPanel .sectionHead{margin:0}
+#opponentPanel .sectionHead h2{font-size:13px;color:var(--muted)}
+#opponents{gap:7px;grid-template-columns:repeat(2,minmax(0,1fr))}
+#opponents .opponentChoice{min-height:46px;flex-direction:row;gap:6px;padding:7px 5px;border-radius:12px}
+#opponents .opponentChoice .opponentIcon{font-size:16px;white-space:nowrap}
+#opponents .opponentChoice strong{font-size:13px;line-height:1.2}
+#opponents .opponentChoice small{display:none}
+.gameTop{display:grid;grid-template-columns:minmax(94px,1fr) auto minmax(94px,1fr);gap:4px;align-items:center;flex-shrink:0}
+.topHistory{display:flex;align-items:center;gap:5px;justify-self:start}
+.gameTop .historyIcon,.gameTop #menuBtn{width:44px;height:44px;padding:0;display:grid;place-items:center}
+.gameTop h2{font-size:clamp(13px,4vw,18px);overflow-wrap:anywhere}
+.inGame #historyBtn{grid-column:1/-1}
+main.localGame #game{position:relative}
+main.localGame .gameTop{order:-1;width:100%;padding:0 3px;display:grid;grid-template-columns:1fr auto}
+main.localGame .gameTop h2{display:none}
+main.localGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 174px))}
+main.localGame .seatInner{grid-template-columns:32px minmax(0,1fr) 32px;gap:9px}
+main.localGame .seatInner::after{content:'';width:32px}
+@media(max-height:480px){main.localGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 158px))}}
+@media(orientation:landscape) and (min-width:500px){main.localGame #game{padding-top:48px}main.localGame .gameTop{position:absolute;top:0;left:0;right:0}main.localGame .boardWrap{width:min(65vw,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 65px))}main.localGame .seatInner{grid-template-columns:1fr}.localSeat .seatInner::after{display:none}}

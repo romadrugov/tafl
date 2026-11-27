@@ -59,3 +59,7 @@ System/light/dark themes, saved preferences, live OS theme switching, and option
 ## 0.9.0
 
 Shared-device local two-player mode. Select opponent before game setup. Fixed board, opposite-facing turn indicators, compact local menus, single-ply undo/redo, and independent local/AI saves for each variant. Local moves never call the AI. All four variants and both themes supported.
+
+## 0.9.1
+
+Compact opponent selector and common top toolbar with undo, conditional redo, and one menu. Built with Gradle; debug APK signature checked using Android apksigner.
