@@ -188,3 +188,38 @@ main.localGame.resultGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top
  main.localGame:not(.timedGame) .boardWrap{width:min(65vw,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 121px))}
  main.localGame.resultGame .boardWrap{width:min(65vw,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 175px))}
 }
+
+/* 0.9.11: stable move toolbar and aligned player cards. */
+.gameTop,.timedGame .gameTop,main.localGame .gameTop,main.localGame.timedGame .gameTop{grid-template-columns:minmax(0,1fr) 44px;gap:10px}
+.gameTop h2,main.localGame .gameTop h2{display:block;text-align:left;font-size:clamp(20px,5.8vw,26px);line-height:1.15;margin:0}
+.inGame .counts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.inGame .counts>.playerCard{display:grid;grid-template-rows:auto 1.2em auto auto;align-content:start;gap:4px;padding:10px 12px;border-radius:14px;min-width:0}
+.inGame .counts>.playerCard.activePlayer{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.inGame .counts .playerIdentity{font-size:clamp(11px,3.4vw,14px);line-height:1.3;min-height:2.6em;overflow-wrap:anywhere}
+.playerMeta{font-size:12px;line-height:1.2;color:var(--gold);min-width:0}
+.inGame .playerCard .count{display:flex;align-items:center;gap:6px;font-size:clamp(18px,5.5vw,25px);line-height:1.2;font-variant-numeric:tabular-nums;margin:1px 0 0;white-space:nowrap}
+.countToken{width:22px;height:22px;border-radius:50%;flex:0 0 22px;box-shadow:inset 0 0 0 2px #8884}
+.countKing{font-size:.9em;color:var(--gold)}
+.inGame .playerCard .aiClock{margin:3px 0 0;width:100%;font-size:clamp(19px,5.8vw,27px)}
+#moveControls{display:grid;grid-template-columns:repeat(2,52px);justify-content:center;gap:9px}
+#moveControls .historyIcon{width:52px;height:46px}
+#moveControls .historyIcon:disabled{opacity:.35}
+.inGame #gameActions>.statusWrap{grid-column:1/-1;margin:0;text-align:center;min-width:0}
+.inGame #gameActions .status{font-size:clamp(21px,6vw,26px);line-height:1.25;min-height:0}
+.inGame #gameActions .statusSub{margin-top:3px;min-height:0}
+.inGame #gameActions .statusSub:empty{display:none}
+#resultLog{grid-column:1/-1;width:100%}
+main.inGame:not(.localGame) #game{gap:10px}
+main.localGame .counts{display:none!important}
+main.localGame .boardWrap,main.localGame.timedGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 236px))}
+main.localGame.resultGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 338px))}
+@media(max-height:480px) and (orientation:portrait){
+ main.localGame .boardWrap,main.localGame.timedGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 220px))}
+ main.localGame.resultGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 322px))}
+}
+@media(orientation:landscape) and (min-width:500px){
+ main.localGame #game{padding-bottom:56px}
+ main.localGame.resultGame #game{padding-bottom:158px}
+ main.localGame .boardWrap,main.localGame.timedGame .boardWrap{width:min(65vw,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 121px))}
+ main.localGame.resultGame .boardWrap{width:min(65vw,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 223px))}
+}

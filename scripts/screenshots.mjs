@@ -35,14 +35,14 @@ await page.reload();await page.locator('.slide').first().locator('.newChoice').c
 assert.equal(await page.locator('#setupActions').isVisible(),true);assert.equal(await page.locator('#play').isDisabled(),true);assert((await page.locator('#opponentPanel').boundingBox()).height<110);await page.screenshot({path:'previews/opponent-select.png'});
 await page.locator('#opponents [data-value="local"]').click();assert.equal(await page.locator('#sidePanel').isHidden(),true);assert.equal(await page.locator('#levelPanel').isHidden(),true);assert.equal(await page.locator('#playersPanel').isVisible(),true);assert.equal(await page.locator('#playerName0').textContent(),'Player 1');assert.equal(await page.locator('#playerName1').textContent(),'Player 2');await page.locator('#editPlayer0').click();await page.locator('#nameInput').fill('Alice');await page.locator('#nameForm button[type=submit]').click();await page.locator('#editPlayer1').click();await page.locator('#nameInput').fill('Bob');await page.locator('#nameForm button[type=submit]').click();await page.locator('#colorPlayer0').click();assert.deepEqual(await page.evaluate(()=>players.map(p=>p.side)),[1,2]);await page.locator('#colorPlayer1').click();assert.deepEqual(await page.evaluate(()=>players.map(p=>p.side)),[2,1]);await page.locator('#colorPlayer0').click();await page.screenshot({path:'previews/local-setup.png'});await page.setViewportSize({width:360,height:640});const sticky=async()=>{const a=await page.locator('#setupActions').boundingBox();assert(a.y>=0&&a.y+a.height<=640);assert(await page.locator('#howToPlay').isVisible());assert(await page.locator('#play').isVisible())};await sticky();await page.locator('#opponents [data-value="ai"]').click();await sticky();await page.evaluate(()=>{$('setupScroll').scrollTop=$('setupScroll').scrollHeight});await sticky();await page.screenshot({path:'previews/compact-setup.png'});await page.locator('#opponents [data-value="local"]').click();await sticky();await page.setViewportSize({width:390,height:790});
 await page.locator('#play').click();await page.locator('#localBlack').waitFor();assert.equal(await page.locator('#blackPlayerName').textContent(),'Alice');assert.equal(await page.locator('#whitePlayerName').textContent(),'Bob');
-assert.equal(await page.locator('.gameTop').isVisible(),true);assert.equal(await page.locator('#undo').isVisible(),true);assert.equal(await page.locator('#redo').isHidden(),true);assert.equal(await page.locator('.seatMenu').count(),0);assert.equal(await page.locator('#gameActions').isVisible(),true);assert.equal(await page.locator('#resultLog').isHidden(),true);
+assert.equal(await page.locator('.gameTop').isVisible(),true);assert.equal(await page.locator('#undo').isVisible(),true);assert.equal(await page.locator('#redo').isVisible(),true);assert.equal(await page.locator('#redo').isDisabled(),true);assert.equal(await page.locator('.seatMenu').count(),0);assert.equal(await page.locator('#gameActions').isVisible(),true);assert.equal(await page.locator('#resultLog').isHidden(),true);
 assert.equal(await page.locator('#localBlack').evaluate(x=>getComputedStyle(x).transform),'matrix(-1, 0, 0, -1, 0, 0)');
 assert.equal(await page.locator('#localBlack').evaluate(x=>x.classList.contains('activeSeat')),true);
 await page.screenshot({path:'previews/local-game.png'});
 const localPlay=async()=>{const m=await page.evaluate(()=>e.moves(hist.at(-1).b,hist.at(-1).turn)[0]);await page.locator('#board .sq').nth(m[0]).click();await page.locator('#board .sq').nth(m[1]).click();await page.waitForFunction(()=>!busy);};
 const localInitial=await snap();await localPlay();const localOne=await snap();assert.equal(await page.evaluate(()=>hist.at(-1).turn),2);assert.equal(await page.locator('#localWhite').evaluate(x=>x.classList.contains('activeSeat')),true);assert.equal(await page.evaluate(()=>worker===null&&hist.at(-1).log.length===1),true);
 await localPlay();const localTwo=await snap();assert.equal(await page.evaluate(()=>hist.at(-1).log.length),2);
-await page.locator('#undo').click();assert.equal(await snap(),localOne);assert.equal(await page.locator('#redo').isVisible(),true);await page.screenshot({path:'previews/local-toolbar.png'});await page.locator('#undo').click();assert.equal(await snap(),localInitial);await page.locator('#redo').click();assert.equal(await snap(),localOne);await page.locator('#redo').click();assert.equal(await snap(),localTwo);assert.equal(await page.locator('#redo').isHidden(),true);
+await page.locator('#undo').click();assert.equal(await snap(),localOne);assert.equal(await page.locator('#redo').isVisible(),true);await page.screenshot({path:'previews/local-toolbar.png'});await page.locator('#undo').click();assert.equal(await snap(),localInitial);await page.locator('#redo').click();assert.equal(await snap(),localOne);await page.locator('#redo').click();assert.equal(await snap(),localTwo);assert.equal(await page.locator('#redo').isVisible(),true);assert.equal(await page.locator('#redo').isDisabled(),true);
 await page.locator('#menuBtn').click();assert.equal(await page.locator('#actionModal').isVisible(),true);assert.equal(await page.locator('#actionButtons button').filter({hasText:/Undo|Redo/}).count(),0);await page.locator('#actionButtons button').filter({hasText:/^Save and exit$/}).click();
 assert.equal(await page.locator('.slide').first().locator('.continueChoice').isVisible(),true);assert.equal(await page.locator('.slide').first().locator('.continueLocalChoice').isVisible(),true);
 await page.reload();await page.locator('.slide').first().locator('.continueLocalChoice').click();assert.equal(await snap(),localTwo);assert.equal(await page.evaluate(()=>opponent), 'local');assert.equal(await page.locator('#blackPlayerName').textContent(),'Alice');assert.equal(await page.locator('#whitePlayerName').textContent(),'Bob');assert.deepEqual(await page.evaluate(()=>players.map(p=>p.side)),[1,2]);
@@ -71,7 +71,7 @@ assert.equal(await page.locator('#clockPanel').isHidden(),true);assert.equal(awa
 await page.locator('#opponents [data-value="local"]').click();
 assert.equal(await page.locator('#clockPanel').isVisible(),true);await page.locator('#clockChoices [data-value="5"]').click();await page.screenshot({path:'previews/clock-setup.png'});
 await page.evaluate(()=>{clockChoice=5;mode='brandubh';opponent='local';start()});
-assert.equal(await page.locator('#blackLocalClock').isVisible(),true);assert.equal(await page.locator('#undo').isHidden(),true);assert.equal(await page.evaluate(()=>clockSide),1);
+assert.equal(await page.locator('#blackLocalClock').isVisible(),true);assert.equal(await page.locator('#undo').isVisible(),true);assert.equal(await page.locator('#undo').isDisabled(),true);assert.equal(await page.evaluate(()=>clockSide),1);
 const beforeClocks=await page.evaluate(()=>clockSnapshot().remaining);
 assert(beforeClocks[1]<=300000&&beforeClocks[1]>298000);assert.equal(beforeClocks[2],300000);
 await page.evaluate(()=>{clockStarted-=62000});await localPlay();
@@ -182,18 +182,35 @@ for(const kind of ['ai','local']){
   await page.evaluate(win=>{hist[hist.length-1]={...hist.at(-1),win};persist();render()},win);
   assert.equal(await page.locator('#resultLog').isVisible(),true);
   assert.equal(await page.locator('#undo').isEnabled(),true);
-  assert.equal(await page.locator('#redo').isHidden(),true);
+  assert.equal(await page.locator('#redo').isVisible(),true);assert.equal(await page.locator('#redo').isDisabled(),true);
   assert.equal(await page.locator('#newGameAction').isVisible(),true);assert.equal(await page.locator('#menuGameAction').isVisible(),true);
  }
  await page.locator('#resultLog').click();assert.equal(await page.locator('#historyModal').isVisible(),true);await page.locator('#closeHistory').click();
  await page.screenshot({path:'previews/'+kind+'-result-controls.png'});
  await page.locator('#undo').click();assert.equal(await page.evaluate(()=>hist.at(-1).win),0);assert.equal(await page.locator('#resultLog').isHidden(),true);assert.equal(await page.locator('#redo').isVisible(),true);
- await page.locator('#redo').click();assert.equal(await page.locator('#resultLog').isVisible(),true);assert.equal(await page.locator('#redo').isHidden(),true);
+ await page.locator('#redo').click();assert.equal(await page.locator('#resultLog').isVisible(),true);assert.equal(await page.locator('#redo').isVisible(),true);assert.equal(await page.locator('#redo').isDisabled(),true);
  if(kind==='local'){const rect=await page.locator('#gameActions').boundingBox();assert(rect.y+rect.height<=640+1)}
 }
 await page.evaluate(()=>{clockChoice=5;mode='brandubh';opponent='local';start()});
-assert.equal(await page.locator('#gameActions').isHidden(),true);
+assert.equal(await page.locator('#gameActions').isVisible(),true);
 await page.evaluate(()=>{clockStarted-=400000;clockCheck()});
-assert.equal(await page.locator('#undo').isHidden(),true);assert.equal(await page.locator('#resultLog').isVisible(),true);
+assert.equal(await page.locator('#undo').isVisible(),true);assert.equal(await page.locator('#undo').isDisabled(),true);assert.equal(await page.locator('#resultLog').isVisible(),true);
 console.log('Bottom undo/redo, result-only log, result undo/redo and timed-game restrictions OK');
+
+for(const locale of ['en','es','ru']){
+ for(const humanSide of [1,2]){
+  await page.evaluate(({locale,humanSide})=>{lang=locale;applyLanguage();clockChoice=0;mode='brandubh';opponent='ai';human=humanSide;start();stop();render()},{locale,humanSide});
+  assert.equal(await page.locator('#title').textContent(),'Brandubh');
+  const a=await page.locator('#undo').boundingBox(),b=await page.locator('#redo').boundingBox(),s=await page.locator('#status').boundingBox();
+  assert(a&&b&&s&&Math.abs(a.y-b.y)<1&&s.y>=a.y+a.height);
+  assert.equal(await page.locator('#redo').isDisabled(),true);
+  const black=await page.locator('#blackCard').boundingBox(),white=await page.locator('#whiteCard').boundingBox(),bc=await page.locator('#bc').boundingBox(),wc=await page.locator('#wc').boundingBox();
+  assert(Math.abs(black.height-white.height)<1&&Math.abs(bc.y-wc.y)<1);
+  await page.evaluate(()=>{future=[hist.at(-1)];render()});
+  const after=await page.locator('#undo').boundingBox();assert.equal(after.x,a.x);assert.equal(after.y,a.y);
+ }
+}
+await page.evaluate(()=>{lang='en';applyLanguage();clockChoice=0;mode='brandubh';opponent='ai';human=2;start();stop();render()});
+await page.screenshot({path:'previews/aligned-game.png'});
+console.log('Stable undo/redo positions, left title, bottom status and aligned localized player cards OK');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}

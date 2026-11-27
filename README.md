@@ -99,3 +99,7 @@ Custom theme and language pickers with equal-sized fields, hidden time control u
 ## 0.9.10
 
 Move undo/redo into a bottom toolbar. Game log appears there only when a game ends, alongside Undo (untimed games), New game and Main menu. Timed games still disallow undo/redo; all results expose the log. AI and local modes share controls, with responsive local board sizing.
+
+## 0.9.11
+
+Always-visible Undo and Redo (disabled when unavailable, including timed matches); left-aligned variant title without board dimensions, larger bottom turn/result status in AI matches, aligned player cards with active-side highlight. Local seat turn indicators retained. Production package and signing unchanged.
