@@ -1,0 +1,12 @@
+node_modules/
+android/
+dist/
+*.apk
+*.aab
+*.jks
+*.keystore
+*.pem
+*.p12
+*.der
+.env*
+local.properties
