@@ -37,6 +37,47 @@ jobs:
           cd android
           chmod +x gradlew
           ./gradlew --no-daemon assembleDebug assembleRelease bundleRelease
+      - name: Sign production APK and AAB if configured
+        id: signing
+        env:
+          TAFL_KEYSTORE_BASE64: ${{ secrets.TAFL_KEYSTORE_BASE64 }}
+          TAFL_KEYSTORE_PASSWORD: ${{ secrets.TAFL_KEYSTORE_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$TAFL_KEYSTORE_BASE64" && -z "$TAFL_KEYSTORE_PASSWORD" ]]; then
+            echo "::notice::Release signing is not configured; unsigned and test builds only."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ -z "$TAFL_KEYSTORE_BASE64" || -z "$TAFL_KEYSTORE_PASSWORD" ]]; then
+            echo "::error::Both signing secrets are required."
+            exit 1
+          fi
+          umask 077
+          KEYSTORE="$(mktemp "$RUNNER_TEMP/tafl-key-XXXXXX.p12")"
+          trap 'rm -f "$KEYSTORE" "$RUNNER_TEMP/tafl-aligned.apk"' EXIT
+          printf '%s' "$TAFL_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
+          unset TAFL_KEYSTORE_BASE64
+          TOOLS="$ANDROID_HOME/build-tools/36.0.0"
+          VERSION="$(node -p 'require("./package.json").version')"
+          mkdir -p signed
+          APK="signed/TAFL-${VERSION}.apk"
+          AAB="signed/TAFL-${VERSION}.aab"
+          "$TOOLS/zipalign" -P 16 -f 4 android/app/build/outputs/apk/release/app-release-unsigned.apk "$RUNNER_TEMP/tafl-aligned.apk"
+          "$TOOLS/apksigner" sign --ks "$KEYSTORE" --ks-type PKCS12 --ks-key-alias tafl --ks-pass env:TAFL_KEYSTORE_PASSWORD --key-pass env:TAFL_KEYSTORE_PASSWORD --out "$APK" "$RUNNER_TEMP/tafl-aligned.apk"
+          "$TOOLS/apksigner" verify --verbose --print-certs "$APK"
+          jarsigner -keystore "$KEYSTORE" -storetype PKCS12 -storepass:env TAFL_KEYSTORE_PASSWORD -keypass:env TAFL_KEYSTORE_PASSWORD -signedjar "$AAB" android/app/build/outputs/bundle/release/app-release.aab tafl
+          jarsigner -verify "$AAB"
+          echo "signed=true" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Upload signed production packages
+        if: steps.signing.outputs.signed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: TAFL-${{ steps.signing.outputs.version }}-signed
+          path: signed/*
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
           name: TAFL-0.8.1-android

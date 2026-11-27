@@ -10,3 +10,11 @@ dist/
 *.der
 .env*
 local.properties
+
+# Release signing secrets and generated signed files
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.base64
+signed/
