@@ -7,7 +7,7 @@ Offline collection of Brandubh, Tablut, Hnefatafl (Fetlar-inspired) and Copenhag
 - `www/index.html`: original, unmodified 0.6.5 game (UI, rules, AI and translations).
 - `www/icon.svg`: launcher/web icon artwork.
 - `capacitor.config.json`: Capacitor 8; application ID `com.tafl.kingescape`.
-- `scripts/prepare-android.mjs`: generates the native Android project, copies web assets, adds system-bar safe areas and sets version 0.7.0 / code 14.
+- `scripts/prepare-android.mjs`: generates the native Android project, copies web assets, adds system-bar safe areas and sets version 0.7.2 / code 16.
 - `.github/workflows/android.yml`: builds debug APK, unsigned release APK and AAB on pushes to main or manual dispatch.
 
 The generated `android/` and `dist/` directories are not committed; regenerate them from source. For future native plugins, install dependencies and extend the preparation script or commit the generated native project deliberately.
@@ -37,3 +37,7 @@ This is a packaging migration, not a Play Store release. Native UI and installat
 ## License
 
 No redistribution or modification license has been selected. Public visibility does not itself grant such a license.
+
+## Illustrated guide
+
+The app has a localized About page, in-game illustrated rules and a pre-game How to play button. `npm run screenshots` generates real UI screenshots and tests the guide (install Playwright Chromium first). Run before preparing a release build.

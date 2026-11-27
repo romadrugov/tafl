@@ -26,6 +26,8 @@ jobs:
           "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0"
       - run: npm install --no-audit --no-fund
       - run: npm test
+      - run: npx playwright install chromium --with-deps
+      - run: npm run screenshots
       - run: npm run android:prepare
       - name: Build debug and unsigned release
         run: |
@@ -34,9 +36,10 @@ jobs:
           ./gradlew --no-daemon assembleDebug assembleRelease bundleRelease
       - uses: actions/upload-artifact@v4
         with:
-          name: TAFL-0.7.0-android
+          name: TAFL-0.7.2-android
           path: |
             android/app/build/outputs/apk/debug/*.apk
             android/app/build/outputs/apk/release/*.apk
             android/app/build/outputs/bundle/release/*.aab
+            www/shots/*.png
           if-no-files-found: error
