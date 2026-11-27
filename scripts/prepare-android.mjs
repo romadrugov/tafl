@@ -15,6 +15,10 @@ main.inGame{min-height:calc(100dvh - var(--tafl-top) - var(--tafl-bottom))}
 if(!existsSync('android'))run('npx',['cap','add','android']);
 run('npx',['cap','sync','android']);
 edit('android/app/build.gradle',s=>s.replace(/versionCode\s+\d+/,'versionCode 18').replace(/versionName\s+["'][^"']+["']/,'versionName "0.8.1"'));
+// Test variant installs beside the production app and never overwrites existing saves.
+edit('android/app/build.gradle',s=>s.replace(/buildTypes\s*\{/, 'buildTypes {\n        debug { applicationIdSuffix ".test" }'));
+mkdirSync('android/app/src/debug',{recursive:true});
+writeFileSync('android/app/src/debug/AndroidManifest.xml', '<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"><application android:label="TAFL Test" tools:replace="android:label"/></manifest>');
 const res='android/app/src/main/res';
 mkdirSync(res+'/drawable',{recursive:true});
 writeFileSync(res+'/drawable/tafl_icon.xml',`<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">

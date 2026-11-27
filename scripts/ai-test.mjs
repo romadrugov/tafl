@@ -15,14 +15,15 @@ for(const mode of modes){
  // Block a direct escape on the next turn when a safe defense exists.
  b=Array(e.L).fill(0);b[idx(0,2)]=3;b[idx(0,n-1)]=0;b[idx(2,1)]=1;b[idx(2,n-2)]=1;b[idx(1,2)]=2;b[idx(0,0)]=0;
  // Single open route to the upper edge/corner; lower route blocked.
- b[idx(0,3)]=1;b[idx(n-2,1)]=1;b[idx(1,0)]=1;
- if(mode==='tablut'){b=Array(e.L).fill(0);b[idx(2,2)]=3;b[idx(1,2)]=2;b[idx(3,2)]=2;b[idx(2,3)]=1;b[idx(0,0)]=0;b[idx(0,1)]=1;b[idx(n-2,1)]=1}
+ b[idx(0,3)]=2;b[idx(n-2,1)]=1;b[idx(1,0)]=1;
+ if(mode==='tablut'){b=Array(e.L).fill(0);b[idx(2,2)]=3;b[idx(1,2)]=2;b[idx(3,2)]=2;b[idx(2,3)]=2;b[idx(3,1)]=1;b[idx(0,0)]=0;b[idx(0,1)]=1;b[idx(n-2,1)]=1}
  g=state(e,b,1);
+ assert(!e.moves(b,1).some(m=>e.record(g,m).win===1),mode+' fixture has direct black win');
  const safe=e.moves(b,1).filter(m=>!replyWins(e,g,m));assert(safe.length,mode+' fixture has no defense');assert(e.moves(b,1).some(m=>replyWins(e,g,m)),mode+' fixture has no trap');
  for(let l=1;l<3;l++){let r=check(e,g,l);assert(!replyWins(e,g,r.m),mode+' misses forced defense '+l)}
  let aware=check(e,g,0,()=>0);assert(!replyWins(e,g,aware.m),mode+' attentive novice misses defense');
- let misses=0,notices=0;const rng=seed(420);for(let i=0;i<40;i++){let r=check(e,g,0,rng);if(replyWins(e,g,r.m))misses++;else notices++}
- assert(misses>0&&notices>0,mode+' novice must sometimes miss and sometimes notice');console.log(mode+' easy fixture: '+misses+' misses / '+notices+' defenses (40 seeded choices)');
+ let misses=0,notices=0;const rng=seed(420);for(let i=0;i<80;i++){let r=check(e,g,0,rng);if(replyWins(e,g,r.m))misses++;else notices++}
+ assert(misses>0&&notices>0,mode+' novice must sometimes miss and sometimes notice');console.log(mode+' easy fixture: '+misses+' misses / '+notices+' defenses (80 seeded choices)');
  const opening=e.start();const next=e.record(opening,e.moves(opening.b,1)[0]);
  for(const [side,g] of [[1,opening],[2,next]])for(let l=0;l<3;l++){let t=Date.now(),r=check(e,g,l);assert(r.depth>=1);if(l>0)assert(r.depth>=2);console.log(JSON.stringify({mode,side,level:l,depth:r.depth,work:r.nodes,ms:Date.now()-t,move:r.m,safe:r.safeMoves,legal:r.legalMoves}))}
 }

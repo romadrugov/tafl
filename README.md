@@ -49,3 +49,5 @@ All levels check immediate wins and every legal opponent reply at the root. Easy
 ## 0.8.1
 
 Easy now uses simple local scoring and probabilistic threat awareness (55% of non-winning turns), without deep search. Medium and Hard unchanged. Undo/Redo restores entire human/AI exchanges, persists the future branch in backward-compatible saves, and discards it when making a new move.
+
+Debug builds now use `com.tafl.kingescape.test` and label TAFL Test for side-by-side testing without deleting the production installation. Release builds retain the production application ID and require the original signing key.
