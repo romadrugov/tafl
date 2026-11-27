@@ -83,3 +83,7 @@ Unified setup card, independently scrolling content and fixed bottom How to play
 ## 0.9.6
 
 Optional per-side chess clocks: off, 5, 10 or 20 minutes, no increment. Active-side thinking only; animations and app background are paused. Save/resume retains remaining time. Timeout is a normal loss recorded in statistics. Undo/redo unavailable in timed games; unchanged without clocks. Both AI and local modes, all four variants.
+
+## 0.9.7
+
+Android Back handled by Capacitor App plugin; in-game pause icon, shared pause state for timed/untimed and AI/local games. Both clocks freeze, pending AI work is cancelled and restarted on resume. History and rules preserve pause; timed positions blurred on pause. Back navigates overlays and setup without exiting the app. Production ID/signing unchanged.

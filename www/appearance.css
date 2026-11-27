@@ -137,3 +137,7 @@ main.localGame.timedGame .seatInner::after{display:none}
 @media(orientation:landscape) and (min-width:500px){main.localGame.timedGame .seatInner{grid-template-columns:1fr}.localClock{min-width:60px}}
 .timedGame .gameTop{grid-template-columns:minmax(44px,1fr) auto minmax(44px,1fr)}
 main.localGame.timedGame .gameTop{grid-template-columns:1fr auto}
+
+/* Paused timed matches hide the position to avoid extra thinking time. */
+main.pausedGame.timedGame #boardWrap{filter:blur(9px);pointer-events:none;user-select:none}
+.gameTop #menuBtn svg{display:block;margin:auto}

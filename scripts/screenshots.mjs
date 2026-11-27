@@ -98,4 +98,34 @@ await page.evaluate(()=>{clockSuspend()});assert.equal(await page.evaluate(()=>c
 await page.evaluate(()=>{clockStart(2)});assert.equal(await page.evaluate(()=>clockSide),2);
 await page.evaluate(()=>{clockChoice=0;mode='brandubh';opponent='local';start()});assert.equal(await page.locator('#blackLocalClock').isHidden(),true);assert.equal(await page.locator('#undo').isVisible(),true);
 console.log('Independent chess clocks, alternating turns, persistence, timeout, AI and local play OK');
+
+// Native Back delegates to this same handler. Pause survives rules/history
+// and background visibility changes; no stale worker can commit while paused.
+await page.evaluate(()=>{clockChoice=5;mode='brandubh';opponent='local';start();clockStarted-=12000;window.taflBack()});
+assert.equal(await page.locator('#actionModal').isVisible(),true);assert.equal(await page.locator('#menuBtn').getAttribute('aria-label'),'Pause');
+const pausedTime=await page.evaluate(()=>clockSnapshot().remaining);
+assert.equal(await page.evaluate(()=>matchPaused&&clockSide===0&&clockStarted===null),true);
+await page.waitForTimeout(350);assert.deepEqual(await page.evaluate(()=>clockSnapshot().remaining),pausedTime);
+await page.locator('#actionButtons button').filter({hasText:/^Rules$/}).click();
+assert.equal(await page.locator('#guidePage').isVisible(),true);assert.deepEqual(await page.evaluate(()=>clockSnapshot().remaining),pausedTime);
+await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#actionModal').isVisible(),true);
+await page.locator('#actionButtons button').filter({hasText:/^Game history$/}).click();
+await page.waitForTimeout(200);assert.deepEqual(await page.evaluate(()=>clockSnapshot().remaining),pausedTime);
+await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#actionModal').isVisible(),true);
+await page.evaluate(()=>{clockReady();document.dispatchEvent(new Event('visibilitychange'))});assert.deepEqual(await page.evaluate(()=>clockSnapshot().remaining),pausedTime);
+await page.screenshot({path:'previews/pause-menu.png'});
+await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#actionModal').isHidden(),true);assert.equal(await page.evaluate(()=>!matchPaused&&clockSide===1&&clockStarted!==null),true);
+await page.waitForTimeout(200);assert((await page.evaluate(()=>clockLeft(1)))<pausedTime[1]);assert.equal(await page.evaluate(()=>clockLeft(2)),pausedTime[2]);
+await page.locator('#menuBtn').click();assert.equal(await page.evaluate(()=>matchPaused),true);
+await page.locator('#actionButtons button').filter({hasText:/^Resume game$/}).click();assert.equal(await page.evaluate(()=>!matchPaused),true);
+await page.evaluate(()=>{clockChoice=5;mode='brandubh';opponent='ai';human=2;level=0;start();window.taflBack()});
+assert.equal(await page.evaluate(()=>matchPaused&&worker===null&&hist.at(-1).log.length===0),true);
+const botPaused=await page.evaluate(()=>clockSnapshot().remaining);await page.waitForTimeout(500);
+assert.equal(await page.evaluate(()=>hist.at(-1).log.length),0);assert.deepEqual(await page.evaluate(()=>clockSnapshot().remaining),botPaused);
+await page.evaluate(()=>window.taflBack());await page.waitForFunction(()=>!busy&&clockSide===2);
+assert.equal(await page.evaluate(()=>hist.at(-1).log.length),1);
+await page.evaluate(()=>{clockChoice=0;mode='brandubh';opponent='local';start();window.taflBack()});assert.equal(await page.evaluate(()=>matchPaused),true);await page.evaluate(()=>window.taflBack());assert.equal(await page.evaluate(()=>!matchPaused),true);
+await page.evaluate(()=>menu());await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#settingsModal').isVisible(),true);await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#settingsModal').isHidden(),true);
+await page.evaluate(()=>setup('brandubh'));await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#galleryStage').isVisible(),true);
+console.log('Pause menu, Back routing, frozen clocks, nested rules/history and cancelled AI worker OK');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}
