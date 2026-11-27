@@ -75,3 +75,7 @@ Final domain-based application ID `com.taflclub` (debug: `com.taflclub.test`), m
 ## 0.9.4
 
 Local completed-game statistics, filters, separate AI/local results, idempotent undo/redo accounting, ordered settings, single Back button in guide, and conservative Copenhagen exit-fort detection (official rule: https://aagenielsen.dk/copenhagen_rules.php). Final package `com.taflclub`, existing permanent key.
+
+## 0.9.5
+
+Unified setup card, independently scrolling content and fixed bottom How to play/Start game controls. Local player names and complementary colors, saved per match with backward-compatible defaults; names in game and history. Same com.taflclub package and signing key.
