@@ -1,6 +1,6 @@
 # Permanent Android signing
 
-The original prototype key was lost. Do not remove the old app until you are ready to lose or independently back up its local saves. TAFL Test has a separate application ID. Production still uses `com.tafl.kingescape`.
+The original prototype key was lost. Do not remove the old app until you are ready to lose or independently back up its local saves. TAFL Test has a separate application ID. Production uses `com.playtufl` from 0.9.2; the old app and test builds have independent data.
 
 ## One-time owner setup (macOS)
 
@@ -24,7 +24,7 @@ gh secret list --repo romadrugov/tafl
 
 The second command prompts for the same password without storing it in the command line. Never paste the key or password into chat, commit them or attach them to an issue. Base64 is not encryption; GitHub CLI encrypts the secret for storage.
 
-Run the existing Android workflow manually on main after setting both secrets. The `TAFL-<version>-signed` artifact contains the production APK and signed AAB. The ordinary artifact contains the separate test APK and unsigned production outputs. If both secrets are missing, signing is skipped; if only one is missing, the workflow fails. The signing step checks APK signatures and AAB signature verification. Keep main protected and only authorize trusted workflow changes; anyone able to change a privileged workflow can potentially misuse the signing key.
+Run the existing Android workflow manually on main after setting both secrets. The `TAFL-<version>-signed` artifact contains the production APK and signed AAB. The ordinary artifact contains the separate test APK and unsigned production outputs. If either secret is missing, the workflow fails. The signed artifact also includes verification reports and SHA-256 checksums. The signing step checks APK signatures and AAB signature verification. Keep main protected and only authorize trusted workflow changes; anyone able to change a privileged workflow can potentially misuse the signing key.
 
 ## Google Play
 

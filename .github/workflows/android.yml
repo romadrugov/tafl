@@ -39,7 +39,7 @@ jobs:
           ./gradlew --no-daemon assembleDebug assembleRelease bundleRelease
       - name: Verify debug APK signature
         run: "$ANDROID_HOME/build-tools/36.0.0/apksigner verify --verbose --print-certs android/app/build/outputs/apk/debug/app-debug.apk"
-      - name: Sign production APK and AAB if configured
+      - name: Sign production APK and AAB
         id: signing
         env:
           TAFL_KEYSTORE_BASE64: ${{ secrets.TAFL_KEYSTORE_BASE64 }}
@@ -48,9 +48,8 @@ jobs:
         run: |
           set -euo pipefail
           if [[ -z "$TAFL_KEYSTORE_BASE64" && -z "$TAFL_KEYSTORE_PASSWORD" ]]; then
-            echo "::notice::Release signing is not configured; unsigned and test builds only."
-            echo "signed=false" >> "$GITHUB_OUTPUT"
-            exit 0
+            echo "::error::Permanent release signing secrets are missing."
+            exit 1
           fi
           if [[ -z "$TAFL_KEYSTORE_BASE64" || -z "$TAFL_KEYSTORE_PASSWORD" ]]; then
             echo "::error::Both signing secrets are required."
@@ -68,9 +67,14 @@ jobs:
           AAB="signed/TAFL-${VERSION}.aab"
           "$TOOLS/zipalign" -P 16 -f 4 android/app/build/outputs/apk/release/app-release-unsigned.apk "$RUNNER_TEMP/tafl-aligned.apk"
           "$TOOLS/apksigner" sign --ks "$KEYSTORE" --ks-type PKCS12 --ks-key-alias tafl --ks-pass env:TAFL_KEYSTORE_PASSWORD --key-pass env:TAFL_KEYSTORE_PASSWORD --out "$APK" "$RUNNER_TEMP/tafl-aligned.apk"
-          "$TOOLS/apksigner" verify --verbose --print-certs "$APK"
+          "$TOOLS/apksigner" verify --verbose --print-certs "$APK" | tee signed/signature.txt
+          "$TOOLS/aapt" dump badging "$APK" | sed -n '1p' > signed/package.txt
+          grep -F "name='com.playtufl' versionCode='22' versionName='0.9.2'" signed/package.txt
+          cat signed/package.txt
           jarsigner -keystore "$KEYSTORE" -storetype PKCS12 -storepass:env TAFL_KEYSTORE_PASSWORD -keypass:env TAFL_KEYSTORE_PASSWORD -signedjar "$AAB" android/app/build/outputs/bundle/release/app-release.aab tafl
           jarsigner -verify "$AAB"
+          keytool -printcert -jarfile "$AAB" > signed/aab-certificate.txt
+          (cd signed && sha256sum *.apk *.aab > SHA256SUMS.txt)
           echo "signed=true" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Upload signed production packages
@@ -82,7 +86,7 @@ jobs:
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
-          name: TAFL-0.9.1-android
+          name: TAFL-0.9.2-android
           path: |
             android/app/build/outputs/apk/debug/*.apk
             android/app/build/outputs/apk/release/*.apk
