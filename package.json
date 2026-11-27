@@ -1,6 +1,6 @@
 {
   "name": "tafl",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "private": true,
   "description": "Games of the North",
   "scripts": {
@@ -8,7 +8,8 @@
     "android:debug": "npm run android:prepare && cd android && ./gradlew assembleDebug",
     "android:release": "npm run android:prepare && cd android && ./gradlew assembleRelease bundleRelease",
     "test": "node scripts/smoke.mjs",
-    "screenshots": "node scripts/screenshots.mjs"
+    "screenshots": "node scripts/screenshots.mjs",
+    "test:ai": "node scripts/ai-test.mjs"
   },
   "dependencies": {
     "@capacitor/core": "8.0.0",

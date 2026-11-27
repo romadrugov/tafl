@@ -43,8 +43,152 @@ function region(b,starts){let q=starts.slice(),seen=new Set(q),outs=0;for(let i=
 const borders=[{a:Array.from({length:n},(_,i)=>i),d:n},{a:Array.from({length:n},(_,i)=>L-n+i),d:-n},{a:Array.from({length:n},(_,i)=>i*n),d:1},{a:Array.from({length:n},(_,i)=>i*n+n-1),d:-1}];
 function apply(b,m){let [f,t]=m,c=b.slice(),p=c[f],s=S[p],cap=new Set();c[f]=0;c[t]=p;for(let d=0;d<4;d++){let a=N[t][d];if(a<0||c[a]===3||S[c[a]]!==3-s)continue;let z=N[a][d];if(z>=0&&(S[c[z]]===s||restricted(z)&&!c[z]))cap.add(a)}if(shield)for(let {a,d} of borders){for(let i=1;i<n-1;){if(S[c[a[i]]]!==3-s){i++;continue}let j=i;while(j<n-1&&S[c[a[j]]]===3-s)j++;let run=a.slice(i,j),l=a[i-1],r=a[j],br=x=>S[c[x]]===s||C.includes(x)&&!c[x];if(run.length>=2&&br(l)&&br(r)&&run.every(x=>S[c[x+d]]===s)&&[l,r,...run.map(x=>x+d)].includes(t))for(let x of run)if(c[x]!==3)cap.add(x);i=j}}for(let i of cap)c[i]=0;let k=c.indexOf(3),win=0,why='';if(goal(k)){win=2;why='Король спасся'}else if(s===1){let ns=N[k],caught=k===T?ns.includes(t)&&ns.every(i=>c[i]===1):ns.includes(T)?ns.includes(t)&&ns.every(i=>i===T||c[i]===1):strong?!edge(k)&&ns.includes(t)&&ns.every(i=>c[i]===1):[0,2].some(d=>{let a=ns[d],z=ns[d+1];return (a===t||z===t)&&((c[a]===1&&(c[z]===1||restricted(z)&&!c[z]))||(c[z]===1&&(c[a]===1||restricted(a)&&!c[a]))) });if(caught){c[k]=0;cap.add(k);win=1;why='Король захвачен'}else{let starts=[];for(let i=0;i<L;i++)if(S[c[i]]===2)starts.push(i);if(!region(c,starts)[1]){win=1;why='Защитники окружены'}else if(strong&&!shield&&starts.length===1&&edge(k)&&!dest(c,k).length){win=1;why='Король заблокирован'}}}return {b:c,win,why,cap:[...cap]}}
 function exits(b,k,ignore=-1){let count=0;for(let ray of R[k])for(let j of ray){if(j!==ignore&&b[j])break;if(goal(j)){count++;break}}return count}
-function evaluate(b,s){let k=b.indexOf(3),v=0,reach=Array(L).fill(0),km=dest(b,k);for(let i=0;i<L;i++){let p=b[i];if(!p)continue;let t=S[p];if(p===1){v+=190+Math.max(0,M+1-dist(i,k))*4;for(let [x,y] of [[1,1],[1,-1]])if(b[at(i%n+x,Math.floor(i/n)+y)]===1)v+=11}else if(p===2)v-=260;for(let j of dest(b,i))reach[j]|=t}for(let i=0;i<L;i++){let p=b[i];if(p!==1&&p!==2)continue;for(let d=0;d<4;d++){let a=N[i][d],z=N[i][d^1];if(a>=0&&z>=0&&(S[b[a]]===3-p||restricted(a)&&!b[a])&&!b[z]&&(reach[z]&(3-p))){v+=p===1?-(s===2?140:55):(s===1?160:55);break}}}let [space,outs]=region(b,[k]);let kd=N[k].filter(i=>b[i]===1).length;return v+Math.min(...(corner?C:Array.from({length:L},(_,i)=>i).filter(edge)).map(i=>dist(i,k)))*18+kd*(strong?15:28)-km.length*4-exits(b,k)*(s===2?6500:1200)-km.reduce((a,i)=>a+exits(b,i,k)*18,0)-outs*9-space*2}
-function choose(g,level){let nodes=0,stop=false,budget=[2500,12500,48000][level],max=[2,4,5][level],tt=new Map(),counts=new Map();for(let k of g.keys)counts.set(k,(counts.get(k)||0)+1);function visit(k,d){let x=(counts.get(k)||0)+d;if(x)counts.set(k,x);else counts.delete(k)}function ordered(b,s){let k=b.indexOf(3);return moves(b,s).map(m=>{let r=apply(b,m);let v=r.win?(r.win===1?100000:-100000):r.cap.length*(s===1?300:-230)+(s===1?1:-1)*(dist(m[0],k)-dist(m[1],k));return {m,r,v}}).sort((a,b)=>s===1?b.v-a.v:a.v-b.v)}function search(b,s,d,alpha,beta,ply){if(++nodes>budget){stop=true;return 0}let k=key(b,s),cnt=counts.get(k)||0;if(cnt>=3)return 0;let aa=alpha,bb=beta,c=cnt===1?tt.get(k):null;if(c&&c.d>=d){if(c.flag===0)return c.v;if(c.flag===1)alpha=Math.max(alpha,c.v);else beta=Math.min(beta,c.v);if(alpha>=beta)return c.v}if(!d){if(!moves(b,s).length)return s===1?-100000+ply:100000-ply;return evaluate(b,s)}let list=ordered(b,s);if(!list.length)return s===1?-100000+ply:100000-ply;let best=s===1?-Infinity:Infinity;for(let o of list){let r=o.r,v;if(r.win)v=r.win===1?100000-ply:-100000+ply;else{let nk=key(r.b,3-s);visit(nk,1);v=search(r.b,3-s,d-1,alpha,beta,ply+1);visit(nk,-1)}if(stop)return 0;if(s===1){best=Math.max(best,v);alpha=Math.max(alpha,best)}else{best=Math.min(best,v);beta=Math.min(beta,best)}if(alpha>=beta)break}if(cnt===1&&tt.size<15000)tt.set(k,{d,v:best,flag:best<=aa?-1:best>=bb?1:0});return best}let s=g.turn,list=ordered(g.b,s);if(!list.length)return null;let best=list[0],done=0;for(let d=1;d<=max;d++){let a=-Infinity,beta=Infinity,cur=best;for(let o of [best,...list.filter(o=>o!==best)]){let r=o.r,v;if(r.win)v=r.win===1?100000:-100000;else{let k=key(r.b,3-s);visit(k,1);v=search(r.b,3-s,d-1,a,beta,1);visit(k,-1)}if(stop)break;if(s===1&&v>a){a=v;cur=o}if(s===2&&v<beta){beta=v;cur=o}}if(stop)break;best=cur;done=d;if(Math.abs(s===1?a:beta)>99900)break}return {m:best.m,nodes:Math.min(nodes,budget),depth:done}}
+
+// Engine 3: variant-scaled search, exact root tactical safety, separate novice policy.
+// All values use attacker-positive units internally. No game-rule changes.
+const AI_PROFILES=[
+ {depth:1,work:[0,0,0],ms:0,band:135},
+ {depth:3,work:[14000,22000,36000],ms:850,band:0},
+ {depth:5,work:[65000,100000,150000],ms:2800,band:0}
+];
+const aiSize=n===7?0:n===9?1:2,winScore=100000;
+const aiGoals=Array.from({length:L},(_,i)=>i).filter(goal);
+const aiGoalDist=Array.from({length:L},(_,i)=>Math.min(...aiGoals.map(j=>dist(i,j))));
+function hasMove(b,s){for(let i=0;i<L;i++)if(S[b[i]]===s)for(const ray of R[i])for(const j of ray){if(b[j])break;if(!restricted(j)||b[i]===3)return true}return false}
+function evaluate(b,s){
+ const k=b.indexOf(3);if(k<0)return winScore;if(goal(k))return -winScore;
+ let a=0,w=0,links=0,pressure=0,mobA=0,mobW=0,guard=0;
+ const reach=new Uint8Array(L),km=dest(b,k);
+ for(let i=0;i<L;i++){
+  let p=b[i];if(!p)continue;let side=S[p],d=dist(i,k);
+  if(p===1){a++;pressure+=Math.max(0,M+1-d);for(let [dx,dy] of [[1,1],[1,-1]])if(b[at(i%n+dx,Math.floor(i/n)+dy)]===1)links++}
+  else if(p===2){w++;if(d<=2)guard++}
+  for(let j of dest(b,i)){reach[j]|=side;if(side===1)mobA++;else mobW++}
+ }
+ let threatsA=0,threatsW=0;
+ for(let i=0;i<L;i++){
+  let p=b[i];if(p!==1&&p!==2)continue;
+  for(let d=0;d<4;d++){
+   let u=N[i][d],v=N[i][d^1];
+   if(u>=0&&v>=0&&(S[b[u]]===3-p||restricted(u)&&!b[u])&&!b[v]&&(reach[v]&(3-p))){if(p===1)threatsA++;else threatsW++;break}
+  }
+ }
+ const [space,outs]=region(b,[k]);let kd=N[k].filter(i=>b[i]===1).length;
+ let routes=0,routeSquares=0;
+ for(let j of km){let count=exits(b,j,k);if(count){routes+=Math.min(2,count);routeSquares++}}
+ const startA=n===7?8:n===9?16:24,startW=startA/2;
+ // Normalize the material baseline: the initial numerical advantage is not a winning position.
+ let v=(a-startA)*100-(w-startW)*190;
+ v+=links*7+pressure*2+aiGoalDist[k]*13+kd*(strong?12:23)-guard*5;
+ v+=(mobA/Math.max(1,a)-mobW/Math.max(1,w+1))*3-km.length*4;
+ v-=routes*12+routeSquares*9+outs*5+space*1.5;
+ v+=threatsW*(s===1?75:25)-threatsA*(s===2?58:20);
+ const immediate=exits(b,k);v-=immediate*(s===2?1800:200);
+ // Near-king threats are more important than generic adjacency.
+ if(!strong&&k!==T&&!N[k].includes(T)){
+  for(let d=0;d<4;d++){let x=N[k][d],y=N[k][d^1];if(x>=0&&y>=0&&(b[x]===1||restricted(x)&&!b[x])&&!b[y]&&(reach[y]&1)){v+=s===1?750:180;break}}
+ }
+ return v;
+}
+function choose(g,level,options={}){
+ const s=g.turn,profile=AI_PROFILES[level]||AI_PROFILES[1],sign=s===1?1:-1;
+ const rng=typeof options.random==='function'?options.random:Math.random;
+ const counts=new Map(),pv=new Map(),begin=Date.now();let nodes=0,work=0,aborted=false,depthDone=0;
+ const budget=profile.work[aiSize],limit=profile.ms;
+ for(let k of g.keys)counts.set(k,(counts.get(k)||0)+1);
+ function visit(k,d){let v=(counts.get(k)||0)+d;if(v)counts.set(k,v);else counts.delete(k)}
+ function terminal(r,next,ply){
+  if(r.win)return r.win===1?winScore-ply:-winScore+ply;
+  if((counts.get(key(r.b,next))||0)>=2)return 0;
+  if(!hasMove(r.b,next))return next===1?-winScore+ply:winScore-ply;
+  return null;
+ }
+ function ordered(b,side){
+  let k=b.indexOf(3),preferred=pv.get(key(b,side));
+  return moves(b,side).map(m=>{
+   let r=apply(b,m);work++;
+   let v=r.win?(r.win===side?1e7:-1e7):r.cap.length*220;
+   if(side===2&&b[m[0]]===3)v+=16*(aiGoalDist[m[0]]-aiGoalDist[m[1]])+20*exits(r.b,m[1]);
+   else if(side===1)v+=2*(dist(m[0],k)-dist(m[1],k));
+   if(preferred&&m[0]===preferred[0]&&m[1]===preferred[1])v+=1e6;
+   return {m,r,order:v};
+  }).sort((a,b)=>b.order-a.order||a.m[0]-b.m[0]||a.m[1]-b.m[1]);
+ }
+ // Root candidates are all legal moves; mandatory safety pass checks every legal reply.
+ const root=ordered(g.b,s);
+ if(!root.length)return null;
+ for(const o of root){
+  o.term=terminal(o.r,3-s,1);
+  if(o.term!==null&&o.term*sign>=winScore-100)return {m:o.m,nodes:work,depth:1,safety:true};
+ }
+ let safeCount=0;
+ for(const o of root){
+  o.loss=o.term!==null&&o.term*sign< -winScore+100;
+  o.replyCap=0;
+  o.static=o.term!==null?o.term*sign:evaluate(o.r.b,3-s)*sign;
+  if(o.term===null){
+   const nk=key(o.r.b,3-s);visit(nk,1);
+   for(const m of moves(o.r.b,3-s)){
+    const r=apply(o.r.b,m);work++;
+    const t=terminal(r,s,2);
+    if(t!==null&&t*sign<=-winScore+100){o.loss=true;break}
+    o.replyCap=Math.max(o.replyCap,r.cap.length);
+   }
+   visit(nk,-1);
+  }
+  if(!o.loss)safeCount++;
+  o.quick=o.static-o.replyCap*(s===1?110:200);
+ }
+ const candidates=(safeCount?root.filter(o=>!o.loss):root).sort((a,b)=>b.quick-a.quick||b.order-a.order);
+ const stats=()=>({nodes:work,depth:depthDone,safety:true,safeMoves:safeCount,legalMoves:root.length});
+ // Novice: retain immediate-win/loss awareness but allow bounded, reproducible strategic mistakes.
+ // Select from a score band, never from arbitrary legal moves, and do not search deep tactics.
+ if(level===0){
+  const best=candidates[0],pool=candidates.filter(o=>o.quick>=best.quick-profile.band&&o.replyCap<=best.replyCap+1);
+  const weights=pool.map((o,i)=>i===0?1.2:Math.exp((o.quick-best.quick)/95)*1.7);
+  let pick=rng()*weights.reduce((a,b)=>a+b,0),chosen=pool[0];
+  for(let i=0;i<pool.length;i++){pick-=weights[i];if(pick<=0){chosen=pool[i];break}}
+  depthDone=1;return {m:chosen.m,...stats()};
+ }
+ // Medium/hard share a guaranteed two-ply baseline, even when the optional budget is exhausted.
+ // Principal variations are ordering hints only; no incorrect transposition scores across repetition histories.
+ let optional=false,extraStart=0,extraWork=0;
+ function exceeded(){return optional&&(work-extraWork>=budget||Date.now()-extraStart>=limit)}
+ function search(b,side,depth,alpha,beta,ply){
+  nodes++;if(exceeded()){aborted=true;return 0}
+  if(depth===0)return evaluate(b,side);
+  let best=side===1?-Infinity:Infinity,bm=null;
+  const list=ordered(b,side);
+  if(!list.length)return side===1?-winScore+ply:winScore-ply;
+  for(const o of list){
+   let v=terminal(o.r,3-side,ply+1);
+   if(v===null){const k=key(o.r.b,3-side);visit(k,1);v=search(o.r.b,3-side,depth-1,alpha,beta,ply+1);visit(k,-1)}
+   if(aborted)return 0;
+   if(side===1){if(v>best){best=v;bm=o.m}alpha=Math.max(alpha,best)}
+   else{if(v<best){best=v;bm=o.m}beta=Math.min(beta,best)}
+   if(alpha>=beta)break;
+  }
+  if(bm&&pv.size<30000)pv.set(key(b,side),bm);
+  return best;
+ }
+ let best=candidates[0],score=best.quick;
+ for(let depth=2;depth<=profile.depth;depth++){
+  let alpha=-Infinity,beta=Infinity,cur=best,curScore=-Infinity;
+  for(const o of [best,...candidates.filter(o=>o!==best)]){
+   let v=o.term;
+   if(v===null){const k=key(o.r.b,3-s);visit(k,1);v=search(o.r.b,3-s,depth-1,alpha,beta,1);visit(k,-1)}
+   if(aborted)break;
+   const relative=v*sign;
+   if(relative>curScore){curScore=relative;cur=o}
+   if(s===1)alpha=Math.max(alpha,v);else beta=Math.min(beta,v);
+  }
+  if(aborted)break;
+  best=cur;score=curScore;depthDone=depth;
+  if(Math.abs(score)>winScore-100)break;
+  if(!optional){optional=true;extraStart=Date.now();extraWork=work}
+ }
+ return {m:best.m,...stats()};
+}
 function start(){let b=initial();return {b,turn:1,keys:[key(b,1)],log:[],win:0,why:'',last:[],cap:[]}}
 function record(g,m){if(g.win||S[g.b[m[0]]]!==g.turn||!dest(g.b,m[0]).includes(m[1]))throw Error('Illegal move');let r=apply(g.b,m),turn=3-g.turn,keys=[...g.keys,key(r.b,turn)],win=r.win,why=r.why;if(!win&&keys.filter(x=>x===keys[keys.length-1]).length>=3){win=3;why='Троекратное повторение'}if(!win&&!moves(r.b,turn).length){win=g.turn;why='У соперника нет ходов'}return {...r,turn,win,why,keys,last:m,log:[...g.log,{s:g.turn,m,cap:r.cap.length}]}}
 return {n,L,T,C,edge,goal,restricted,S,name,initial,dest,moves,apply,choose,start,record};}

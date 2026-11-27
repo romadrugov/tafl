@@ -41,3 +41,7 @@ No redistribution or modification license has been selected. Public visibility d
 ## Illustrated guide
 
 The app has a localized About page, in-game illustrated rules and a pre-game How to play button. `npm run screenshots` generates real UI screenshots and tests the guide (install Playwright Chromium first). Run before preparing a release build.
+
+## AI 0.8.0
+
+All levels check immediate wins and every legal opponent reply at the root. Easy uses bounded stochastic choice; Medium and Hard complete a two-ply baseline and then deepen with variant-specific extra work/time budgets. AI tests cover both sides, immediate escape, defensive traps and all three levels across four rule sets. No calibrated Elo rating yet.
