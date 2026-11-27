@@ -236,7 +236,7 @@ function choose(g,level,options={}){
    return replies.length>0;
   }finally{visit(k,-1)}
  }
- function whiteForkThreat(b){
+ function whiteForkThreat(b,kingOnly=false){
   const k=key(b,2);visit(k,1);
   try{
    const king=b.indexOf(3);
@@ -244,7 +244,7 @@ function choose(g,level,options={}){
    // Medium checks king moves. Hard and Impossible also check sacrifices
    // and ordinary defender moves that open a path for the king.
    const km=dest(b,king).map(j=>[king,j]);
-   const list=level===1?km:km.concat(moves(b,2).filter(m=>m[0]!==king));
+   const list=kingOnly||level===1?km:km.concat(moves(b,2).filter(m=>m[0]!==king));
    for(const m of list){
     if(forkExpired())return null;
     const r=apply(b,m);work++;
@@ -253,6 +253,39 @@ function choose(g,level,options={}){
     const v=forkAfterWhite(r.b);
     if(v===null)return null;
     if(v)return true;
+   }
+   return false;
+  }finally{visit(k,-1)}
+ }
+ // Three white moves: a king approach followed by a forced exit fork.
+ // The two-move check alone cannot detect the reported game.
+ function whiteDeepThreat(b){
+  const k=key(b,2);visit(k,1);
+  try{
+   const king=b.indexOf(3);
+   if(king<0)return false;
+   const list=dest(b,king).map(j=>[king,j]);
+   for(const m of list){
+    if(forkExpired())return null;
+    const r=apply(b,m);work++;
+    const t=terminal(r,1,2);
+    if(t!==null){if(t< -winScore+100)return true;continue}
+    const nk=key(r.b,1);visit(nk,1);
+    let forced=true;
+    try{
+     const replies=moves(r.b,1);
+     replies.sort((a,z)=>dist(a[1],m[1])-dist(z[1],m[1]));
+     for(const a of replies){
+      if(forkExpired())return null;
+      const q=apply(r.b,a);work++;
+      const term=terminal(q,2,3);
+      if(term!==null){if(term>=0){forced=false;break}continue}
+      const v=whiteForkThreat(q.b,true);
+      if(v===null)return null;
+      if(!v){forced=false;break}
+     }
+    }finally{visit(nk,-1)}
+    if(forced)return true;
    }
    return false;
   }finally{visit(k,-1)}
@@ -269,6 +302,9 @@ function choose(g,level,options={}){
    }
    // If all choices are forced losses, continue searching for resistance.
    if(keep.length)candidates=keep;
+   const deepKeep=[];
+   for(const o of candidates){const v=o.term===null?whiteDeepThreat(o.r.b):false;if(v===true){forkRejected++;continue}if(v===null)forkUnknown++;deepKeep.push(o)}
+   if(deepKeep.length)candidates=deepKeep;
   }else{
    for(const o of candidates){
     if(o.term!==null)continue;
