@@ -62,4 +62,40 @@ await page.locator('#statsVariant').selectOption('all');await page.locator('#sta
 await page.locator('#statsLevel').selectOption('1');assert.deepEqual(await page.locator('#statsAi strong').allTextContents(),['1','1','0','0','100%']);await page.locator('#statsLevel').selectOption('all');
 await page.screenshot({path:'previews/statistics.png'});await page.locator('#statsBack').click();await page.reload();await page.locator('#statsBtn').click();assert.deepEqual(await page.locator('#statsAi strong').allTextContents(),['2','1','1','0','50%']);assert.equal(await page.locator('.recentGame').count(),3);await page.locator('#statsBack').click();
 console.log('Statistics filters, separate local record, undo/redo idempotency and reload OK');
+
+// Chess clocks: default off, equal independent budgets, switching, no
+// reset by selection, no animation charge, timeout, saved remaining time.
+await page.setViewportSize({width:390,height:790});
+await page.locator('.slide').first().locator('.newChoice').click();
+assert.equal(await page.locator('#clockChoices [data-value="0"]').getAttribute('aria-pressed'),'true');
+await page.locator('#opponents [data-value="local"]').click();
+await page.locator('#clockChoices [data-value="5"]').click();await page.screenshot({path:'previews/clock-setup.png'});
+await page.evaluate(()=>{clockChoice=5;mode='brandubh';opponent='local';start()});
+assert.equal(await page.locator('#blackLocalClock').isVisible(),true);assert.equal(await page.locator('#undo').isHidden(),true);assert.equal(await page.evaluate(()=>clockSide),1);
+const beforeClocks=await page.evaluate(()=>clockSnapshot().remaining);
+assert(beforeClocks[1]<=300000&&beforeClocks[1]>298000);assert.equal(beforeClocks[2],300000);
+await page.evaluate(()=>{clockStarted-=62000});await localPlay();
+const afterBlack=await page.evaluate(()=>clockSnapshot().remaining);
+assert(afterBlack[1]<239000&&afterBlack[1]>235000);assert(afterBlack[2]>298000);assert.equal(await page.evaluate(()=>clockSide),2);
+await page.evaluate(()=>{clockStarted-=20000});await localPlay();
+const afterWhite=await page.evaluate(()=>clockSnapshot().remaining);assert(afterWhite[2]<281000&&afterWhite[2]>277000);assert(afterWhite[1]<=afterBlack[1]&&afterWhite[1]>afterBlack[1]-2000);
+await page.screenshot({path:'previews/local-clock.png'});
+await page.locator('#menuBtn').click();await page.locator('#actionButtons button').first().click();
+const savedClock=await page.evaluate(()=>readSave('brandubh','local').clock);assert.equal(savedClock.limit,5);
+await page.reload();await page.locator('.slide').first().locator('.continueLocalChoice').click();
+const restored=await page.evaluate(()=>clockSnapshot().remaining);assert.equal(restored[2],savedClock.remaining[2]);assert(restored[1]<=savedClock.remaining[1]&&restored[1]>savedClock.remaining[1]-2000);
+await page.evaluate(()=>{clockStarted-=400000;clockCheck()});
+assert.equal(await page.evaluate(()=>hist.at(-1).win),2);assert.equal(await page.evaluate(()=>hist.at(-1).why),'Время вышло');assert.equal(await page.locator('#blackLocalClock').textContent(),'0:00');assert.equal(await page.evaluate(()=>clockSide),0);
+assert.equal(await page.evaluate(()=>readResults().filter(r=>r.id===gameId&&r.win===2&&r.clockMinutes===5).length),1);
+assert.equal(await page.evaluate(()=>readSave('brandubh','local')),null);
+await page.evaluate(()=>{clockChoice=10;mode='brandubh';opponent='ai';human=1;level=0;start()});
+assert.equal(await page.locator('#blackAiClock').isVisible(),true);assert.equal(await page.evaluate(()=>clockSide),1);
+await page.evaluate(()=>{clockStarted-=610000;clockCheck()});assert.equal(await page.evaluate(()=>hist.at(-1).win),2);assert.equal(await page.evaluate(()=>hist.at(-1).why),'Время вышло');
+await page.evaluate(()=>{clockChoice=20;mode='brandubh';opponent='ai';human=2;level=0;start()});
+await page.waitForFunction(()=>!busy&&clockSide===2);const aiClocks=await page.evaluate(()=>clockSnapshot().remaining);assert(aiClocks[1]<1200000&&aiClocks[1]>1190000);assert(aiClocks[2]>1198000);
+await page.screenshot({path:'previews/ai-clock.png'});
+await page.evaluate(()=>{clockSuspend()});assert.equal(await page.evaluate(()=>clockStarted),null);
+await page.evaluate(()=>{clockStart(2)});assert.equal(await page.evaluate(()=>clockSide),2);
+await page.evaluate(()=>{clockChoice=0;mode='brandubh';opponent='local';start()});assert.equal(await page.locator('#blackLocalClock').isHidden(),true);assert.equal(await page.locator('#undo').isVisible(),true);
+console.log('Independent chess clocks, alternating turns, persistence, timeout, AI and local play OK');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}

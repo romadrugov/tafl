@@ -79,3 +79,7 @@ Local completed-game statistics, filters, separate AI/local results, idempotent 
 ## 0.9.5
 
 Unified setup card, independently scrolling content and fixed bottom How to play/Start game controls. Local player names and complementary colors, saved per match with backward-compatible defaults; names in game and history. Same com.taflclub package and signing key.
+
+## 0.9.6
+
+Optional per-side chess clocks: off, 5, 10 or 20 minutes, no increment. Active-side thinking only; animations and app background are paused. Save/resume retains remaining time. Timeout is a normal loss recorded in statistics. Undo/redo unavailable in timed games; unchanged without clocks. Both AI and local modes, all four variants.
