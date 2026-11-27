@@ -14,7 +14,7 @@ for(const [mode,n,black,white] of [['brandubh',7,8,4],['tablut',9,16,8],['hnefat
  const gap=b.slice();gap[at(5,1)]=0;assert(!e.exitFort(gap),'open wall');
  const invaded=b.slice();invaded[at(5,0)]=1;assert(!e.exitFort(invaded),'attacker in interior');
  const trapped=b.slice();trapped[at(5,0)]=2;assert(!e.exitFort(trapped),'king cannot move');
- const loose=b.slice();loose[at(3,1)]=0;loose[at(2,1)]=2;assert(!e.exitFort(loose),'vulnerable edge support');
+ const loose=Array(e.L).fill(0);for(const [x,y] of [[3,0],[6,0],[3,1],[5,1],[4,2]])loose[at(x,y)]=2;loose[at(4,0)]=3;loose[at(8,8)]=1;assert(!e.exitFort(loose),'sealed but vulnerable wall: D9/F9 can capture E9');
  assert(!ctx.Engine('hnefatafl').exitFort(b),'Copenhagen only');
  // Both published diagrams from https://aagenielsen.dk/copenhagen_rules.php
  // (edgefort.png and taget10.png), represented as their bottom-edge coordinates.
