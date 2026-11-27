@@ -103,3 +103,7 @@ Move undo/redo into a bottom toolbar. Game log appears there only when a game en
 ## 0.9.11
 
 Always-visible Undo and Redo (disabled when unavailable, including timed matches); left-aligned variant title without board dimensions, larger bottom turn/result status in AI matches, aligned player cards with active-side highlight. Local seat turn indicators retained. Production package and signing unchanged.
+
+## 0.9.12
+
+Stronger Medium/Hard and new Impossible level. Exact king-exit fork proof supplements minimax, deeper optional search with variant-scaled budgets, no deliberate errors outside Easy. Impossible is not a solved-game guarantee. Existing level IDs, saves, stats, package and signing preserved. Regression includes actual player-reported game.

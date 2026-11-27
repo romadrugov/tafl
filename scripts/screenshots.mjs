@@ -213,4 +213,18 @@ for(const locale of ['en','es','ru']){
 await page.evaluate(()=>{lang='en';applyLanguage();clockChoice=0;mode='brandubh';opponent='ai';human=2;start();stop();render()});
 await page.screenshot({path:'previews/aligned-game.png'});
 console.log('Stable undo/redo positions, left title, bottom status and aligned localized player cards OK');
+
+await page.evaluate(()=>{menu();setup('brandubh')});
+await page.locator('#opponents [data-value="ai"]').click();
+assert.equal(await page.locator('#levels button').count(),4);
+await page.locator('#levels [data-value="3"]').click();
+assert.equal(await page.evaluate(()=>level),3);
+assert.equal(await page.locator('#levels [data-value="3"]').textContent(),'Impossible');
+await page.evaluate(()=>{clockChoice=0;human=1;start();stop();persist();render()});
+assert.equal(await page.evaluate(()=>readSave('brandubh','ai').level),3);
+assert.equal(await page.locator('#whiteMeta').textContent(),'Impossible');
+await page.evaluate(()=>menu());await page.evaluate(()=>resume('brandubh','ai'));assert.equal(await page.evaluate(()=>level),3);
+await page.evaluate(()=>{menu();$('statsBtn').click()});assert.equal(await page.locator('#statsLevel option[value="3"]').textContent(),'Impossible');
+await page.locator('#statsBack').click();
+console.log('Impossible selection, saved match, player card and statistics filter OK');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}

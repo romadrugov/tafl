@@ -223,3 +223,7 @@ main.localGame.resultGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top
  main.localGame .boardWrap,main.localGame.timedGame .boardWrap{width:min(65vw,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 121px))}
  main.localGame.resultGame .boardWrap{width:min(65vw,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 223px))}
 }
+
+/* Four difficulty levels: balanced two-by-two choices, no squeezed labels. */
+#setupCard #levels{grid-template-columns:repeat(2,minmax(0,1fr))}
+#levels [data-value="3"]{font-weight:750}

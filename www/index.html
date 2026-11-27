@@ -21,7 +21,7 @@ main.inGame{padding:12px 14px 18px;gap:0;min-height:100vh;min-height:100dvh}.inG
 <section id="menu"><div id="galleryStage" class="galleryStage"><div class="carousel" id="variants" aria-label="Game variants" tabindex="0"></div></div>
 <div id="setupStage" class="setupStage" hidden><div class="setupHead"><button id="setupBack" aria-label="Back">‹</button><div><h2 id="setupTitle"></h2><small id="setupSub"></small></div><button type="button" id="howToPlay" class="setupRules" data-i18n="rules"></button></div><div id="setupScroll"><div id="setupPreview"></div><div class="panel" id="setupCard"><div class="section" id="opponentPanel"><div class="sectionHead"><h2 data-i18n="opponentTitle"></h2></div><div id="opponents" class="choices"><button class="chip opponentChoice" data-value="ai"><span class="opponentIcon" aria-hidden="true">♟</span><strong data-i18n="vsBot"></strong><small data-i18n="vsBotHint"></small></button><button class="chip opponentChoice" data-value="local"><span class="opponentIcon" aria-hidden="true">♟ ♙</span><strong data-i18n="vsLocal"></strong><small data-i18n="vsLocalHint"></small></button></div></div>
 <div class="section setupOption" id="sidePanel" hidden><div class="sectionHead"><h2 data-i18n="side"></h2></div><div class="choices" id="sides"><button class="chip" data-value="2" data-i18n="defend"></button><button class="chip" data-value="1" data-i18n="attack"></button></div></div>
-<div class="section setupOption" id="levelPanel" hidden><div class="sectionHead"><h2 data-i18n="difficulty"></h2></div><div class="choices three" id="levels"><button class="chip" data-value="0" data-i18n="easy"></button><button class="chip" data-value="1" data-i18n="medium"></button><button class="chip" data-value="2" data-i18n="hard"></button></div></div><div class="section setupOption" id="playersPanel" hidden><div class="sectionHead"><h2 data-i18n="players"></h2></div><div class="playerRow"><span id="playerName0" class="playerName"></span><button class="playerEdit" id="editPlayer0" type="button"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 5 5 5M4 20l4.5-1 12-12a2 2 0 0 0-4.5-4.5l-12 12L4 20Z"/></svg></button><button class="playerColor" id="colorPlayer0" type="button"><span class="seatToken" aria-hidden="true"></span><span class="colorText"></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 8h14l-4-4M19 16H5l4 4"/></svg></button></div><div class="playerRow"><span id="playerName1" class="playerName"></span><button class="playerEdit" id="editPlayer1" type="button"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 5 5 5M4 20l4.5-1 12-12a2 2 0 0 0-4.5-4.5l-12 12L4 20Z"/></svg></button><button class="playerColor" id="colorPlayer1" type="button"><span class="seatToken" aria-hidden="true"></span><span class="colorText"></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 8h14l-4-4M19 16H5l4 4"/></svg></button></div></div><div class="section setupOption" id="clockPanel" hidden><div class="sectionHead"><h2 data-i18n="timeControl"></h2></div><div id="clockChoices" class="choices four"><button type="button" class="chip" data-value="0" data-i18n="clockOff"></button><button type="button" class="chip" data-value="5">5 min</button><button type="button" class="chip" data-value="10">10 min</button><button type="button" class="chip" data-value="20">20 min</button></div><small class="clockHint" data-i18n="clockHint"></small></div></div></div><div class="startWrap" id="setupActions"><button class="primary full" id="play" data-i18n="start" style="padding:16px;font-size:20px"></button></div></div></section>
+<div class="section setupOption" id="levelPanel" hidden><div class="sectionHead"><h2 data-i18n="difficulty"></h2></div><div class="choices" id="levels"><button class="chip" data-value="0" data-i18n="easy"></button><button class="chip" data-value="1" data-i18n="medium"></button><button class="chip" data-value="2" data-i18n="hard"></button><button class="chip" data-value="3" data-i18n="impossible"></button></div></div><div class="section setupOption" id="playersPanel" hidden><div class="sectionHead"><h2 data-i18n="players"></h2></div><div class="playerRow"><span id="playerName0" class="playerName"></span><button class="playerEdit" id="editPlayer0" type="button"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 5 5 5M4 20l4.5-1 12-12a2 2 0 0 0-4.5-4.5l-12 12L4 20Z"/></svg></button><button class="playerColor" id="colorPlayer0" type="button"><span class="seatToken" aria-hidden="true"></span><span class="colorText"></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 8h14l-4-4M19 16H5l4 4"/></svg></button></div><div class="playerRow"><span id="playerName1" class="playerName"></span><button class="playerEdit" id="editPlayer1" type="button"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 5 5 5M4 20l4.5-1 12-12a2 2 0 0 0-4.5-4.5l-12 12L4 20Z"/></svg></button><button class="playerColor" id="colorPlayer1" type="button"><span class="seatToken" aria-hidden="true"></span><span class="colorText"></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 8h14l-4-4M19 16H5l4 4"/></svg></button></div></div><div class="section setupOption" id="clockPanel" hidden><div class="sectionHead"><h2 data-i18n="timeControl"></h2></div><div id="clockChoices" class="choices four"><button type="button" class="chip" data-value="0" data-i18n="clockOff"></button><button type="button" class="chip" data-value="5">5 min</button><button type="button" class="chip" data-value="10">10 min</button><button type="button" class="chip" data-value="20">20 min</button></div><small class="clockHint" data-i18n="clockHint"></small></div></div></div><div class="startWrap" id="setupActions"><button class="primary full" id="play" data-i18n="start" style="padding:16px;font-size:20px"></button></div></div></section>
 <section id="game" hidden><div class="localSeat localTop" id="localBlack" hidden><div class="seatInner"><span class="seatToken black"></span><div class="seatText"><small id="blackPlayerName"></small><strong id="blackTurn"></strong></div><div class="matchClock localClock" id="blackLocalClock" hidden></div></div></div>
 <div class="gameTop"><h2 id="title"></h2><button id="menuBtn" aria-label="Pause"><svg viewBox="0 0 24 24" width="23" height="23" fill="currentColor" aria-hidden="true"><rect x="5" y="4" width="5" height="16" rx="1.5"/><rect x="14" y="4" width="5" height="16" rx="1.5"/></svg></button><button id="gameRules" aria-label="Rules" hidden>?</button></div>
 <div class="counts"><div class="playerCard" id="blackCard"><small class="playerIdentity" id="blackLabel"></small><div class="playerMeta" id="blackMeta"></div><div class="count"><span class="countToken black" aria-hidden="true"></span><span id="bc"></span></div><div class="matchClock aiClock" id="blackAiClock" hidden></div></div><div class="playerCard" id="whiteCard"><small class="playerIdentity" id="whiteLabel"></small><div class="playerMeta" id="whiteMeta"></div><div class="count"><span class="countToken white" aria-hidden="true"></span><span id="wc"></span><span id="kingCount" class="countKing" aria-hidden="true">♔</span></div><div class="matchClock aiClock" id="whiteAiClock" hidden></div></div></div>
@@ -82,8 +82,9 @@ function exits(b,k,ignore=-1){let count=0;for(let ray of R[k])for(let j of ray){
 // All values use attacker-positive units internally. No game-rule changes.
 const AI_PROFILES=[
  {depth:1,work:[0,0,0],ms:0,band:135},
- {depth:3,work:[14000,22000,36000],ms:850,band:0},
- {depth:5,work:[65000,100000,150000],ms:2800,band:0}
+ {depth:4,work:[48000,65000,90000],ms:1300,band:0},
+ {depth:6,work:[180000,240000,320000],ms:3500,band:0},
+ {depth:8,work:[700000,850000,1000000],ms:8500,band:0}
 ];
 const aiSize=n===7?0:n===9?1:2,winScore=100000;
 const aiGoals=Array.from({length:L},(_,i)=>i).filter(goal);
@@ -208,8 +209,76 @@ function choose(g,level,options={}){
   if(!o.loss)safeCount++;
   o.quick=o.static-o.replyCap*(s===1?110:200);
  }
- const candidates=(safeCount?root.filter(o=>!o.loss):root).sort((a,b)=>b.quick-a.quick||b.order-a.order);
- const stats=()=>({nodes:work,depth:depthDone,safety:true,safeMoves:safeCount,legalMoves:root.length});
+ let candidates=(safeCount?root.filter(o=>!o.loss):root).sort((a,b)=>b.quick-a.quick||b.order-a.order);
+ // Exact proof for a king exit on the next white turn after EVERY legal
+ // black reply. A repetition draw, a black win, or any blocking reply
+ // refutes the proof. This is independent of the optional minimax budget.
+ // On 7x7 examine all candidates; on larger boards bound the extra work.
+ const forkStart=Date.now(),forkBase=work;
+ const forkLimit=[0,45000,100000,220000][level];
+ const forkMs=[0,650,1200,2200][level];
+ const forkExpired=()=>aiSize>0&&(work-forkBase>=forkLimit||Date.now()-forkStart>=forkMs);
+ function kingCanExit(b){const k=b.indexOf(3);return k>=0&&dest(b,k).some(goal)}
+ function forkAfterWhite(b){
+  if(!kingCanExit(b))return false;
+  const k=key(b,1);visit(k,1);
+  try{
+   // Try blocking/capturing moves first, without excluding any reply.
+   const king=b.indexOf(3),replies=moves(b,1);
+   replies.sort((a,z)=>dist(a[1],king)-dist(z[1],king));
+   for(const m of replies){
+    if(forkExpired())return null;
+    const r=apply(b,m);work++;
+    const t=terminal(r,2,3);
+    if(t!==null){if(t>=0)return false;continue}
+    if(!kingCanExit(r.b))return false;
+   }
+   return replies.length>0;
+  }finally{visit(k,-1)}
+ }
+ function whiteForkThreat(b){
+  const k=key(b,2);visit(k,1);
+  try{
+   const king=b.indexOf(3);
+   if(king<0)return false;
+   // Medium checks king moves. Hard and Impossible also check sacrifices
+   // and ordinary defender moves that open a path for the king.
+   const km=dest(b,king).map(j=>[king,j]);
+   const list=level===1?km:km.concat(moves(b,2).filter(m=>m[0]!==king));
+   for(const m of list){
+    if(forkExpired())return null;
+    const r=apply(b,m);work++;
+    const t=terminal(r,1,2);
+    if(t!==null){if(t< -winScore+100)return true;continue}
+    const v=forkAfterWhite(r.b);
+    if(v===null)return null;
+    if(v)return true;
+   }
+   return false;
+  }finally{visit(k,-1)}
+ }
+ let forkRejected=0,forkUnknown=0;
+ if(safeCount){
+  if(s===1){
+   const keep=[];
+   for(const o of candidates){
+    const v=o.term===null?whiteForkThreat(o.r.b):false;
+    if(v===true){forkRejected++;continue}
+    if(v===null)forkUnknown++;
+    keep.push(o);
+   }
+   // If all choices are forced losses, continue searching for resistance.
+   if(keep.length)candidates=keep;
+  }else{
+   for(const o of candidates){
+    if(o.term!==null)continue;
+    const v=forkAfterWhite(o.r.b);
+    if(v===true)return {m:o.m,nodes:work,depth:3,safety:true,safeMoves:safeCount,legalMoves:root.length,forcedExit:true};
+    if(v===null)break;
+   }
+  }
+ }
+ const stats=()=>({nodes:work,depth:depthDone,safety:true,safeMoves:safeCount,legalMoves:root.length,forkRejected,forkUnknown});
  // Medium/hard share a guaranteed two-ply baseline, even when the optional budget is exhausted.
  // Principal variations are ordering hints only; no incorrect transposition scores across repetition histories.
  let optional=false,extraStart=0,extraWork=0;
@@ -261,7 +330,7 @@ let lang='en';try{const l=localStorage.getItem('tafl.lang');if(I18N[l])lang=l}ca
 const t=k=>I18N[lang][k]||I18N.en[k]||k;
 const variants={brandubh:{title:'Brandubh',n:7,sub:'ireland'},tablut:{title:'Tablut',n:9,sub:'lapland'},hnefatafl:{title:'Hnefatafl',n:11,sub:'Fetlar'},copenhagen:{title:'Copenhagen',n:11,sub:'tournament'}};
 const sub=k=>variants[k].n+'×'+variants[k].n+' · '+t(variants[k].sub);
-const difficulty=l=>t(['easy','medium','hard'][l]);
+const difficulty=l=>t(['easy','medium','hard','impossible'][l]||'medium');
 const reason=r=>t({'Время вышло':'timeExpired','Король спасся':'escape','Выходная крепость':'fortWin','Король захвачен':'capture','Защитники окружены':'surround','Король заблокирован':'blocked','Троекратное повторение':'repeat','У соперника нет ходов':'nomoves'}[r]||'ongoing');
 const ruleText=k=>[t('common'),t(k==='tablut'?'edge':'corner'),t(variants[k].n===11?'strong':'weak'),t('endRule'),k==='copenhagen'?t('shield')+'\n\n'+t('fortRule'):k==='hnefatafl'?t('blockedRule'):''].filter(Boolean).join('\n\n');
 function applyLanguage(){document.documentElement.lang=lang; $('language').value=lang;for(const el of document.querySelectorAll('[data-i18n]')){el.textContent=({'undo':'↶ ','redo':'↷ ','history':el.id==='historyBtn'?'☷ ':'','attack':'⚫ ','defend':'⚪ '}[el.dataset.i18n]||'')+t(el.dataset.i18n)}for(const id of ['closeAction','closeHistory','closeRules','closeSettings'])$(id).setAttribute('aria-label',t('close'));$('menuBtn').setAttribute('aria-label',t('pauseGame'));$('gameRules').setAttribute('aria-label',t('rules'));$('undo').setAttribute('aria-label',t('undo'));$('redo').setAttribute('aria-label',t('redo'));$('exportText').setAttribute('aria-label',t('export'));$('settingsBtn').setAttribute('aria-label',t('settings'));$('statsBtn').setAttribute('aria-label',t('statistics'));$('statsBack').setAttribute('aria-label',t('back'));$('setupBack').setAttribute('aria-label',t('back'));$('closeName').setAttribute('aria-label',t('close'));settings();refreshSave();syncSettingPickers();}
@@ -292,6 +361,7 @@ for(const [locale,labels] of Object.entries({
  es:{pauseGame:'Pausa',pausedGame:'Partida en pausa',resumeGame:'Reanudar',restartMenu:'Reiniciar',gameLog:'Registro de partida',pausedHint:'La partida y ambos relojes están en pausa.'},
  ru:{pauseGame:'Пауза',pausedGame:'Партия на паузе',resumeGame:'Продолжить',restartMenu:'Начать заново',gameLog:'Журнал партии',pausedHint:'Партия и оба таймера приостановлены.'}
 }))Object.assign(I18N[locale],labels);
+Object.assign(I18N.en,{impossible:'Impossible'});Object.assign(I18N.es,{impossible:'Imposible'});Object.assign(I18N.ru,{impossible:'Невозможный'});
 const systemTheme=matchMedia('(prefers-color-scheme: dark)'),reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let themePreference='system',animationPreference=true;
 try{const saved=localStorage.getItem('tafl.theme');if(['system','light','dark'].includes(saved))themePreference=saved;animationPreference=localStorage.getItem('tafl.animations')!=='off'}catch(err){}
@@ -401,7 +471,7 @@ function statsSelect(id,options){const s=$(id),old=s.value;s.replaceChildren();f
 function showStats(){
  statsSelect('statsVariant',[['all',t('all')],...modes.map(k=>[k,variants[k].title])]);
  statsSelect('statsSide',[['all',t('all')],['1',t('attack')],['2',t('defend')]]);
- statsSelect('statsLevel',[['all',t('all')],...['easy','medium','hard'].map((k,i)=>[String(i),t(k)])]);
+ statsSelect('statsLevel',[['all',t('all')],...['easy','medium','hard','impossible'].map((k,i)=>[String(i),t(k)])]);
  $('statsPage').hidden=false;renderStats();$('statsPage').querySelector('.statsScroll').scrollTop=0;
 }
 function renderStats(){
@@ -425,7 +495,7 @@ document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!$('statsPage').h
 
 function migrate(){try{const old=JSON.parse(localStorage.getItem('tafl.saved.v1')||'null');if(old&&variants[old.mode]&&Array.isArray(old.moves)&&!localStorage.getItem(SAVE+old.mode)){const eng=Engine(old.mode);let g=eng.start();for(const m of old.moves)g=eng.record(g,m);if(!g.win)localStorage.setItem(SAVE+old.mode,JSON.stringify(old));}localStorage.removeItem('tafl.saved.v1')}catch(err){}}
 function saveKey(k=mode,kind=opponent){return SAVE+k+(kind==='local'?'.local':'')}
-function readSave(k=mode,kind=opponent){try{const d=JSON.parse(localStorage.getItem(saveKey(k,kind))||'null');if(!d||d.v!==1||d.mode!==k||(d.opponent||'ai')!==kind||![1,2].includes(d.human)||![0,1,2].includes(d.level)||!Array.isArray(d.moves))return null;return d}catch(err){return null}}
+function readSave(k=mode,kind=opponent){try{const d=JSON.parse(localStorage.getItem(saveKey(k,kind))||'null');if(!d||d.v!==1||d.mode!==k||(d.opponent||'ai')!==kind||![1,2].includes(d.human)||![0,1,2,3].includes(d.level)||!Array.isArray(d.moves))return null;return d}catch(err){return null}}
 function refreshSave(){for(const [i,k] of modes.entries()){const card=$('variants').children[i];if(!card)continue;const ai=readSave(k,'ai'),local=readSave(k,'local');card.querySelector('.continueChoice').hidden=!ai;card.querySelector('.continueLocalChoice').hidden=!local}}
 function clearSave(k=mode,kind=opponent){try{localStorage.removeItem(saveKey(k,kind));return true}catch(err){return false}}
 function persist(){const g=hist[hist.length-1];recordResult(g);if(g.win)return clearSave();try{localStorage.setItem(saveKey(),JSON.stringify({v:1,mode,opponent,human,level,gameId,clock:clockSnapshot(),players:opponent==='local'?players:undefined,moves:g.log.map(l=>l.m),future:future.map(x=>x.last)}));return true}catch(err){$('actionText').textContent=t('saveError');return false}}
