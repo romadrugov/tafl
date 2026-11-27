@@ -95,3 +95,7 @@ One shared pause menu in AI and local matches, ordered Resume, Restart, Game log
 ## 0.9.9
 
 Custom theme and language pickers with equal-sized fields, hidden time control until opponent choice, compact setup header and top-right Rules, simplified pause menu, and removed redundant board-bottom Game log. Existing saves and release signing preserved.
+
+## 0.9.10
+
+Move undo/redo into a bottom toolbar. Game log appears there only when a game ends, alongside Undo (untimed games), New game and Main menu. Timed games still disallow undo/redo; all results expose the log. AI and local modes share controls, with responsive local board sizing.

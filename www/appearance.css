@@ -36,7 +36,7 @@
 .opponentChoice .opponentIcon{font-size:23px;line-height:1}.opponentChoice strong{font-size:15px}.opponentChoice small{font-weight:400;font-size:11px;color:var(--muted)}
 main.inGame.localGame{padding:6px 5px;max-width:100%;min-height:0;height:calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px));overflow:hidden}
 main.localGame #game{display:flex;min-height:0;justify-content:center;gap:5px;align-items:center}
-main.localGame .counts,main.localGame .statusWrap,main.localGame #gameActions,main.localGame #labels,main.localGame #labels2,main.localGame #ranks{display:none!important}
+main.localGame .counts,main.localGame .statusWrap,main.localGame #labels,main.localGame #labels2,main.localGame #ranks{display:none!important}
 main.localGame .boardWrap{padding:0;flex:0 0 auto;width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 130px));max-width:820px;margin:0 auto}
 main.localGame .board{border-width:4px}
 .localSeat{flex:1 1 0;min-height:48px;width:min(100%,820px);display:flex;justify-content:center;align-items:center;opacity:.72}
@@ -163,3 +163,28 @@ main.setupOpen #setupStage{gap:8px}
 #setupActions{padding-top:9px}
 #actionModal.pauseSheet .sheetHead{margin-bottom:14px}
 #actionModal.pauseSheet .sheetHead h3{font-size:21px}
+
+/* Bottom move controls. Keep a single set of buttons for every game state. */
+.gameTop,.timedGame .gameTop{grid-template-columns:44px minmax(0,1fr) 44px}
+.gameTop .toolbarSpacer{width:44px}
+.gameTop h2{white-space:normal}
+.inGame #gameActions{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;flex-shrink:0;gap:8px}
+#moveControls{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px;min-width:0}
+#moveControls .historyIcon{width:52px;min-width:52px;height:46px;padding:0;display:grid;place-items:center;border-radius:14px}
+#resultLog{flex:1;min-width:0;padding:10px 8px}
+#gameActions.ended #newGameAction,#gameActions.ended #menuGameAction{min-width:0;padding:10px 8px;font-size:clamp(12px,3.8vw,16px)}
+main.localGame #gameActions{display:grid;margin:0 auto;max-width:820px;align-self:stretch}
+main.localGame .gameTop{grid-template-columns:1fr auto}
+main.localGame:not(.timedGame) .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 236px))}
+main.localGame.resultGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 290px))}
+@media(max-height:480px) and (orientation:portrait){
+ main.localGame:not(.timedGame) .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 220px))}
+ main.localGame.resultGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 274px))}
+}
+@media(orientation:landscape) and (min-width:500px){
+ main.localGame:not(.timedGame) #game{padding-bottom:56px}
+ main.localGame.resultGame #game{padding-bottom:110px}
+ main.localGame #gameActions{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:min(65vw,480px)}
+ main.localGame:not(.timedGame) .boardWrap{width:min(65vw,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 121px))}
+ main.localGame.resultGame .boardWrap{width:min(65vw,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 175px))}
+}
