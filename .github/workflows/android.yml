@@ -7,7 +7,7 @@ permissions:
   contents: read
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +26,9 @@ jobs:
           "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0"
       - run: npm install --no-audit --no-fund
       - run: npm test
-      - run: npx playwright install chromium --with-deps
+      - name: Locate browser for UI tests
+        run: |
+          if command -v google-chrome >/dev/null; then echo "CHROME_BIN=$(command -v google-chrome)" >> "$GITHUB_ENV"; else npx playwright install chromium --with-deps; fi
       - run: npm run screenshots
       - run: npm run android:prepare
       - name: Build debug and unsigned release
@@ -42,4 +44,5 @@ jobs:
             android/app/build/outputs/apk/release/*.apk
             android/app/build/outputs/bundle/release/*.aab
             www/shots/*.png
+            previews/*.png
           if-no-files-found: error

@@ -26,7 +26,7 @@ if(type==='capture'){p(1,2,1);p(2,2,2);p(3,2,1);shape('path',{d:'M67 67l16 16m0-
 if(type==='escape'){if(edge){arrow(2,2,2,0);p(2,2,3)}else{arrow(0,3,0,0);p(0,3,3)}}
 if(type==='king'){p(2,2,3);p(1,2,1);p(3,2,1);if(strong){p(2,1,1);p(2,3,1)}}
 if(type==='special'){p(2,2,3)}
-if(type==='shield'){p(1,0,1);p(2,0,2);p(3,0,2);p(4,0,1);p(2,1,1);p(3,1,1)}
+if(type==='shield'){p(1,0,2);p(2,0,2);p(3,0,1);p(1,1,1);p(2,1,1);shape('rect',{x:5,y:5,width:28,height:28,fill:'none',stroke:'#739955','stroke-width':2})}
 return svg}
 function card(parent,n,title,txt,type,strong=false,edge=false){let c=el('article','guideCard'+(type?'':' guideFull')),d=el('div');d.append(el('div','guideKicker',L().step+' '+String(n).padStart(2,'0')),el('h4','',title),el('p','',txt));c.append(d);if(type)c.append(diagram(type,strong,edge));parent.append(c)}
 function about(){kind='about';scroll.replaceChildren();const l=L(),hero=el('div','guideHero');hero.innerHTML='<img src="icon.svg" alt=""><div class="guideKicker"></div><h1>TAFL</h1><p></p><div class="guideMetrics"></div>';hero.querySelector('.guideKicker').textContent=l.overview;hero.querySelector('p').textContent=l.intro;for(let [v,label] of [['4',l.variants],['3',l.levels],['✓',l.offline]]){let d=el('div');d.append(el('b','',v),el('small','',label));hero.querySelector('.guideMetrics').append(d)}scroll.append(hero);
