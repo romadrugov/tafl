@@ -45,3 +45,7 @@ The app has a localized About page, in-game illustrated rules and a pre-game How
 ## AI 0.8.0
 
 All levels check immediate wins and every legal opponent reply at the root. Easy uses bounded stochastic choice; Medium and Hard complete a two-ply baseline and then deepen with variant-specific extra work/time budgets. AI tests cover both sides, immediate escape, defensive traps and all three levels across four rule sets. No calibrated Elo rating yet.
+
+## 0.8.1
+
+Easy now uses simple local scoring and probabilistic threat awareness (55% of non-winning turns), without deep search. Medium and Hard unchanged. Undo/Redo restores entire human/AI exchanges, persists the future branch in backward-compatible saves, and discards it when making a new move.
