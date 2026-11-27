@@ -87,3 +87,7 @@ Optional per-side chess clocks: off, 5, 10 or 20 minutes, no increment. Active-s
 ## 0.9.7
 
 Android Back handled by Capacitor App plugin; in-game pause icon, shared pause state for timed/untimed and AI/local games. Both clocks freeze, pending AI work is cancelled and restarted on resume. History and rules preserve pause; timed positions blurred on pause. Back navigates overlays and setup without exiting the app. Production ID/signing unchanged.
+
+## 0.9.8
+
+One shared pause menu in AI and local matches, ordered Resume, Restart, Game log, Rules, Save and exit, Exit without saving. Restart confirmation preserves pause, and Back from the confirmation returns to the menu. Production ID/signing unchanged.

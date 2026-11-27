@@ -43,7 +43,7 @@ const localPlay=async()=>{const m=await page.evaluate(()=>e.moves(hist.at(-1).b,
 const localInitial=await snap();await localPlay();const localOne=await snap();assert.equal(await page.evaluate(()=>hist.at(-1).turn),2);assert.equal(await page.locator('#localWhite').evaluate(x=>x.classList.contains('activeSeat')),true);assert.equal(await page.evaluate(()=>worker===null&&hist.at(-1).log.length===1),true);
 await localPlay();const localTwo=await snap();assert.equal(await page.evaluate(()=>hist.at(-1).log.length),2);
 await page.locator('#undo').click();assert.equal(await snap(),localOne);assert.equal(await page.locator('#redo').isVisible(),true);await page.screenshot({path:'previews/local-toolbar.png'});await page.locator('#undo').click();assert.equal(await snap(),localInitial);await page.locator('#redo').click();assert.equal(await snap(),localOne);await page.locator('#redo').click();assert.equal(await snap(),localTwo);assert.equal(await page.locator('#redo').isHidden(),true);
-await page.locator('#menuBtn').click();assert.equal(await page.locator('#actionModal').isVisible(),true);assert.equal(await page.locator('#actionButtons button').filter({hasText:/Undo|Redo/}).count(),0);await page.locator('#actionButtons button').first().click();
+await page.locator('#menuBtn').click();assert.equal(await page.locator('#actionModal').isVisible(),true);assert.equal(await page.locator('#actionButtons button').filter({hasText:/Undo|Redo/}).count(),0);await page.locator('#actionButtons button').filter({hasText:/^Save and exit$/}).click();
 assert.equal(await page.locator('.slide').first().locator('.continueChoice').isVisible(),true);assert.equal(await page.locator('.slide').first().locator('.continueLocalChoice').isVisible(),true);
 await page.reload();await page.locator('.slide').first().locator('.continueLocalChoice').click();assert.equal(await snap(),localTwo);assert.equal(await page.evaluate(()=>opponent), 'local');assert.equal(await page.locator('#blackPlayerName').textContent(),'Alice');assert.equal(await page.locator('#whitePlayerName').textContent(),'Bob');assert.deepEqual(await page.evaluate(()=>players.map(p=>p.side)),[1,2]);
 for(const k of ['brandubh','tablut','hnefatafl','copenhagen']){await page.evaluate(k=>{mode=k;opponent='local';start()},k);await localPlay();await localPlay();assert.equal(await page.evaluate(()=>hist.at(-1).log.length),2);const rect=await page.locator('#board').boundingBox();assert(Math.abs(rect.width-rect.height)<2);assert(rect.y>=0&&rect.y+rect.height<=790);}
@@ -80,7 +80,7 @@ assert(afterBlack[1]<239000&&afterBlack[1]>235000);assert(afterBlack[2]>298000);
 await page.evaluate(()=>{clockStarted-=20000});await localPlay();
 const afterWhite=await page.evaluate(()=>clockSnapshot().remaining);assert(afterWhite[2]<281000&&afterWhite[2]>277000);assert(afterWhite[1]<=afterBlack[1]&&afterWhite[1]>afterBlack[1]-2000);
 await page.screenshot({path:'previews/local-clock.png'});
-await page.locator('#menuBtn').click();await page.locator('#actionButtons button').first().click();
+await page.locator('#menuBtn').click();await page.locator('#actionButtons button').filter({hasText:/^Save and exit$/}).click();
 const savedClock=await page.evaluate(()=>readSave('brandubh','local').clock);assert.equal(savedClock.limit,5);
 await page.reload();await page.locator('.slide').first().locator('.continueLocalChoice').click();
 const restored=await page.evaluate(()=>clockSnapshot().remaining);assert.equal(restored[2],savedClock.remaining[2]);assert(restored[1]<=savedClock.remaining[1]&&restored[1]>savedClock.remaining[1]-2000);
@@ -109,7 +109,7 @@ await page.waitForTimeout(350);assert.deepEqual(await page.evaluate(()=>clockSna
 await page.locator('#actionButtons button').filter({hasText:/^Rules$/}).click();
 assert.equal(await page.locator('#guidePage').isVisible(),true);assert.deepEqual(await page.evaluate(()=>clockSnapshot().remaining),pausedTime);
 await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#actionModal').isVisible(),true);
-await page.locator('#actionButtons button').filter({hasText:/^Game history$/}).click();
+await page.locator('#actionButtons button').filter({hasText:/^Game log$/}).click();
 await page.waitForTimeout(200);assert.deepEqual(await page.evaluate(()=>clockSnapshot().remaining),pausedTime);
 await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#actionModal').isVisible(),true);
 await page.evaluate(()=>{clockReady();document.dispatchEvent(new Event('visibilitychange'))});assert.deepEqual(await page.evaluate(()=>clockSnapshot().remaining),pausedTime);
@@ -117,7 +117,7 @@ await page.screenshot({path:'previews/pause-menu.png'});
 await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#actionModal').isHidden(),true);assert.equal(await page.evaluate(()=>!matchPaused&&clockSide===1&&clockStarted!==null),true);
 await page.waitForTimeout(200);assert((await page.evaluate(()=>clockLeft(1)))<pausedTime[1]);assert.equal(await page.evaluate(()=>clockLeft(2)),pausedTime[2]);
 await page.locator('#menuBtn').click();assert.equal(await page.evaluate(()=>matchPaused),true);
-await page.locator('#actionButtons button').filter({hasText:/^Resume game$/}).click();assert.equal(await page.evaluate(()=>!matchPaused),true);
+await page.locator('#actionButtons button').filter({hasText:/^Resume$/}).click();assert.equal(await page.evaluate(()=>!matchPaused),true);
 await page.evaluate(()=>{clockChoice=5;mode='brandubh';opponent='ai';human=2;level=0;start();window.taflBack()});
 assert.equal(await page.evaluate(()=>matchPaused&&worker===null&&hist.at(-1).log.length===0),true);
 const botPaused=await page.evaluate(()=>clockSnapshot().remaining);await page.waitForTimeout(500);
@@ -127,5 +127,19 @@ assert.equal(await page.evaluate(()=>hist.at(-1).log.length),1);
 await page.evaluate(()=>{clockChoice=0;mode='brandubh';opponent='local';start();window.taflBack()});assert.equal(await page.evaluate(()=>matchPaused),true);await page.evaluate(()=>window.taflBack());assert.equal(await page.evaluate(()=>!matchPaused),true);
 await page.evaluate(()=>menu());await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#settingsModal').isVisible(),true);await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#settingsModal').isHidden(),true);
 await page.evaluate(()=>setup('brandubh'));await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#galleryStage').isVisible(),true);
-console.log('Pause menu, Back routing, frozen clocks, nested rules/history and cancelled AI worker OK');
+
+// Both modes use exactly the same ordered pause actions.
+for(const kind of ['local','ai']){
+ await page.evaluate(kind=>{clockChoice=5;mode='brandubh';opponent=kind;human=1;start();window.taflBack()},kind);
+ assert.deepEqual(await page.locator('#actionButtons button').allTextContents(),['Resume','Restart','Game log','Rules','Save and exit','Exit without saving']);
+ assert.equal(await page.locator('#actionButtons button').first().getAttribute('class'),'primary');
+ const remaining=await page.evaluate(()=>clockSnapshot().remaining);
+ await page.locator('#actionButtons button').filter({hasText:/^Restart$/}).click();
+ await page.evaluate(()=>window.taflBack());
+ assert.deepEqual(await page.locator('#actionButtons button').allTextContents(),['Resume','Restart','Game log','Rules','Save and exit','Exit without saving']);
+ assert.deepEqual(await page.evaluate(()=>clockSnapshot().remaining),remaining);
+ await page.locator('#actionButtons button').filter({hasText:/^Resume$/}).click();
+ assert.equal(await page.evaluate(()=>matchPaused),false);
+}
+console.log('Pause menu, Back routing, frozen clocks, nested rules/history, cancelled AI worker and menu order OK');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}
