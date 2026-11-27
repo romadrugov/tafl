@@ -16,5 +16,16 @@ for(const [mode,n,black,white] of [['brandubh',7,8,4],['tablut',9,16,8],['hnefat
  const trapped=b.slice();trapped[at(5,0)]=2;assert(!e.exitFort(trapped),'king cannot move');
  const loose=b.slice();loose[at(3,1)]=0;loose[at(2,1)]=2;assert(!e.exitFort(loose),'vulnerable edge support');
  assert(!ctx.Engine('hnefatafl').exitFort(b),'Copenhagen only');
- console.log('Copenhagen exit-fort invariant, rotations and negative cases OK');
+ // Both published diagrams from https://aagenielsen.dk/copenhagen_rules.php
+ // (edgefort.png and taget10.png), represented as their bottom-edge coordinates.
+ const diagrams=[
+  {king:[4,10],white:[[3,10],[6,10],[4,9],[5,9]]},
+  {king:[5,10],white:[[4,10],[6,10],[4,9],[6,9],[4,8],[5,8]]}
+ ];
+ for(const d of diagrams)for(let rot=0;rot<4;rot++){
+  const a=Array(e.L).fill(0),set=(x,y,v)=>{for(let i=0;i<rot;i++)[x,y]=[n-1-y,x];a[at(x,y)]=v};
+  set(...d.king,3);for(const xy of d.white)set(...xy,2);set(8,3,1);
+  assert(e.exitFort(a),'published exit fort rotation '+rot);
+ }
+ console.log('Copenhagen exit-fort invariant, published examples, rotations and negative cases OK');
 }

@@ -59,7 +59,14 @@ function exitFort(b,k=b.indexOf(3)){
  const hostile=j=>j>=0&&!stable[j]&&(restricted(j)||!inside[j]);
  // Shieldwall requires an attacker on the inward square of every victim.
  // Conservatively allow any exterior inward square to become black.
- const shieldThreat=i=>borders.some(({a,d})=>a.includes(i)&&!C.includes(i)&&!inside[i+d]&&!stable[i+d]);
+ const shieldThreat=i=>borders.some(({a,d})=>{
+  const p=a.indexOf(i);if(p<=0||p>=n-1||inside[i+d]||stable[i+d])return false;
+  // At least two adjacent members are required. A lone edge post is safe
+  // if neither adjacent member (including any possible interior king)
+  // could have an attacker directly inward. Exterior soldiers that might
+  // later be removed are still considered possible members.
+  return [p-1,p+1].some(j=>j>0&&j<n-1&&(b[a[j]]===2||inside[a[j]])&&!inside[a[j]+d]&&!stable[a[j]+d]);
+ });
  let changed=true;
  while(changed){changed=false;for(let i=0;i<L;i++)if(stable[i]){
   const ns=N[i];if((hostile(ns[0])&&hostile(ns[1]))||(hostile(ns[2])&&hostile(ns[3]))||shieldThreat(i)){
