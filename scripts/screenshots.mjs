@@ -51,11 +51,11 @@ await page.setViewportSize({width:360,height:640});const fit=await page.evaluate
 console.log('Local two-player mode, nine variants, separate autosaves, single-turn history and compact layout OK');
 for(const k of ['brandubh','tablut','hnefatafl','copenhagen','historical','ardri','tawlbwrdd','magpie','berserk']){
  await page.evaluate(k=>{mode=k;opponent='local';start()},k);
- const actual=await page.evaluate(()=>({goals:document.querySelectorAll('#board .goal .squareIcon').length,expected:Array.from({length:e.L},(_,i)=>i).filter(e.goal).length,throne:document.querySelectorAll('#board .throneMark').length,hasThrone:e.restricted(e.T),king:document.querySelectorAll('#board .king .pieceIcon').length,officers:document.querySelectorAll('#board .commander .pieceIcon,#board .knight .pieceIcon').length,color:getComputedStyle(document.querySelector('#board .goal')).backgroundColor}));
- assert.equal(actual.goals,actual.expected);assert.equal(actual.throne,Number(actual.hasThrone));assert.equal(actual.king,1);assert.equal(actual.officers,k==='berserk'?5:0);assert.equal(actual.color,'rgb(133, 134, 124)');
+ const actual=await page.evaluate(()=>({goals:document.querySelectorAll('#board .goal .squareIcon').length,expected:Array.from({length:e.L},(_,i)=>i).filter(e.goal).length,throne:document.querySelectorAll('#board .throneMark').length,hasThrone:e.restricted(e.T),king:document.querySelectorAll('#board .king .pieceIcon').length,officers:document.querySelectorAll('#board .commander .pieceIcon,#board .knight .pieceIcon').length,plainSpecials:[...document.querySelectorAll('#board .goal,#board .restricted')].every(s=>getComputedStyle(s).backgroundColor===(s.classList.contains('alt')?'rgb(236, 212, 174)':'rgb(214, 181, 133)')),ink:getComputedStyle(document.querySelector('#board .goal .squareIcon')).color}));
+ assert.equal(actual.goals,actual.expected);assert.equal(actual.throne,Number(actual.hasThrone));assert.equal(actual.king,1);assert.equal(actual.officers,k==='berserk'?5:0);assert.equal(actual.plainSpecials,true);assert.equal(actual.ink,'rgb(116, 87, 56)');
  await page.screenshot({path:'previews/royal-'+k+'.png'});
 }
-console.log('Royal board SVG symbols and graphite special squares verified in all nine variants');
+console.log('Royal board SVG symbols on ordinary checkerboard squares verified in all nine variants');
 
 await page.setViewportSize({width:390,height:790});
 await page.evaluate(()=>{clockChoice=0;mode='berserk';opponent='local';start();const b=Array(e.L).fill(0);b[23]=5;b[24]=1;b[26]=1;b[60]=3;b[108]=1;hist=[{...e.start(),b,turn:2,keys:[b.join('')+'2']}];future=[];render()});

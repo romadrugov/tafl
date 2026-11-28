@@ -115,3 +115,7 @@ Adds Historical Hnefatafl (11×11, throne), Ard Rí (7×7, throneless), Tawlbwrd
 ## 0.10.1
 
 Royal visual system: monochrome pieces with custom SVG crown, sword and axe, double-diamond throne, rotated geometric corner ornaments, parallel perimeter markings, lighter graphite goal/restricted cells (#85867c). Shared symbols across previews, gameplay, animations and guides. No game rule or save schema changes.
+
+## 0.10.2
+
+Remove graphite backgrounds from all special squares. Preserve normal alternating wood colors and dark engraved double-diamond, corner and perimeter marks in gameplay, previews and rules. Temporary selection, last-move and capture highlights remain unchanged in purpose. No changes to rules, AI, storage or signing.

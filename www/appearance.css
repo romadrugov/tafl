@@ -233,9 +233,10 @@ main.localGame.resultGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top
 
 /* Royal board identity: monochrome tokens, engraved geometric escape markers.
    Explicit stacking keeps perimeter markings visible behind occupied squares. */
-:root{--special-square:#85867c;--special-ink:#f2eee4;--royal-black:#292b2b;--royal-white:#f5f3ec}
+:root{--special-ink:#745738;--royal-black:#292b2b;--royal-white:#f5f3ec}
 .sq,.miniCell{position:relative;isolation:isolate}
-.sq.restricted,.sq.goal,.miniCell.restricted,.miniCell.goal{background:var(--special-square);box-shadow:none;color:var(--special-ink)}
+.sq.restricted,.sq.goal,.miniCell.restricted,.miniCell.goal{background:#d6b585;box-shadow:none;color:var(--special-ink)}
+.sq.alt.restricted,.sq.alt.goal,.miniCell.alt.restricted,.miniCell.alt.goal{background:#ecd4ae}
 .squareIcon{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;color:var(--special-ink);opacity:.95}
 .squareIcon.throneMark{inset:8%;width:84%;height:84%}
 .squareIcon.cornerMark,.squareIcon.edgeMark{stroke-width:1.8}
@@ -248,9 +249,7 @@ main.localGame.resultGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top
 #kingCount[hidden]{display:none!important}
 #kingCount .pieceIcon{width:100%;height:100%}
 .sq .dot{position:relative;z-index:2;background:#267749;box-shadow:0 0 0 1px #f5f3ec70}
-.sq.last:not(.restricted):not(.goal){background:#aeb6a0}
-.sq.last:is(.restricted,.goal){background:var(--special-square);box-shadow:inset 0 0 0 2px #c0d0ad}
-.sq.sel{background:#b6c4a5;box-shadow:inset 0 0 0 2px #435d4d}
-.sq.sel:is(.restricted,.goal){background:var(--special-square);box-shadow:inset 0 0 0 3px #c1e0b0}
+.sq.last,.sq.last:is(.restricted,.goal){background:#aeb6a0}
+.sq.sel,.sq.sel:is(.restricted,.goal){background:#b6c4a5;box-shadow:inset 0 0 0 2px #435d4d}
 .sq.cap{box-shadow:inset 0 0 0 2px var(--danger)}
 .sq .capturedGhost{position:absolute;z-index:4}
