@@ -344,3 +344,11 @@ main.inGame:not(.localGame) #gameActions{width:100%;max-width:460px}
  .aiSeat .playerMeta:before{margin-right:4px}
  .aiSeat .playerCard .aiClock{padding:2px 5px;min-width:38px;margin-left:1px}
 }
+
+/* Keep clock and name on one line even with wider platform fonts. The
+   metadata row may be wider than the board on very short screens. */
+main.inGame:not(.localGame) .aiSeat,main.inGame:not(.localGame).resultGame .aiSeat{width:max(var(--match-board-width),min(100%,270px))}
+.aiSeat .playerLine{flex-wrap:nowrap}
+.aiSeat .playerIdentity,.aiSeat .aiClock{flex-shrink:0}
+.aiSeat .playerMeta{min-width:0;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto}
+.aiSeat .playerCard .aiClock{font-variant-numeric:tabular-nums;flex-shrink:0}

@@ -282,11 +282,12 @@ for(const [width,height,topInset,bottomInset] of [[393,877,44,24],[390,844,24,24
 }
 await page.evaluate(()=>{document.documentElement.style.removeProperty('--tafl-top');document.documentElement.style.removeProperty('--tafl-bottom');document.body.style.paddingTop='';document.body.style.paddingBottom='';});
 console.log('Centered board, safe-area insets, compact screens, landscape and stable selection verified');
-for(const [width,height] of [[320,600],[844,390]]){
+for(const [width,height] of [[320,600],[320,568],[844,390],[640,360]]){
  await page.setViewportSize({width,height});
  for(const locale of ['en','es','ru']){
   await page.evaluate(locale=>{lang=locale;applyLanguage();mode='berserk';opponent='ai';human=1;clockChoice=20;level=3;start();stop();render()},locale);
-  assert(await page.evaluate(()=>[...document.querySelectorAll('.aiSeat .aiClock')].every(x=>!x.hidden&&Math.abs(x.getBoundingClientRect().top-x.parentElement.getBoundingClientRect().top)<3)));
+  const clocks=await page.evaluate(()=>[...document.querySelectorAll('.aiSeat .aiClock')].map(x=>{const r=x.getBoundingClientRect(),line=x.parentElement.getBoundingClientRect(),meta=x.parentElement.querySelector('.playerMeta');return {name:x.parentElement.textContent,inline:!x.hidden&&Math.abs(r.top-line.top)<3,inside:r.right<=line.right+1,full:meta.hidden||meta.scrollWidth<=meta.clientWidth+1}}));
+  assert(clocks.every(x=>x.inline&&x.inside&&x.full),JSON.stringify({width,height,locale,clocks}));
  }
 }
 console.log('Longest difficulty label and 20-minute timer remain inline in all three locales');

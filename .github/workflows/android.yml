@@ -18,6 +18,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
       - name: Prepare preinstalled Android SDK
         run: |
           SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -path "*/bin/sdkmanager" -type f | sort -V | tail -1)"
@@ -36,7 +37,17 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew --no-daemon assembleDebug assembleRelease bundleRelease
+          # Retry only transient repository throttling, never hide compile failures.
+          set -o pipefail
+          for attempt in 1 2 3; do
+            if ./gradlew --no-daemon assembleDebug assembleRelease bundleRelease 2>&1 | tee /tmp/tafl-gradle.log; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ] || ! grep -Eq '429|Too Many Requests' /tmp/tafl-gradle.log; then
+              exit 1
+            fi
+            sleep "$((attempt * 30))"
+          done
       - name: Verify debug APK signature
         run: "$ANDROID_HOME/build-tools/36.0.0/apksigner verify --verbose --print-certs android/app/build/outputs/apk/debug/app-debug.apk"
       - name: Sign production APK and AAB
