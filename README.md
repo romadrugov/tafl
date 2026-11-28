@@ -147,3 +147,7 @@ Unified interactive tutorial: first optional gallery card, 25 engine-validated e
 ## 0.11.1
 
 Structured tutorial: game premise and annotated board first, then movement, captures, winning, variant differences and separate Magpie, Copenhagen and Berserk chapters. Three reading pages and 25 interactive exercises, with automatic transitions after real game movement/capture animations. Reading pages advance manually; completed courses retain their status and can be replayed. Existing tutorial visibility and progress IDs preserved. No engine-rule changes.
+
+## 0.11.2
+
+Refined tutorial typography and spacing, persistent previous/restart navigation, resume from the first page or any later step, and a completion screen with a direct first-match action (Brandubh, white, easy, untimed). Uses the existing save replacement confirmation. Completed status is preserved when replaying.

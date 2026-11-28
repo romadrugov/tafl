@@ -333,9 +333,13 @@ const prior=await page.evaluate(()=>Object.fromEntries(Object.entries(localStora
 await page.locator('.tutorialStart').click();
 assert(await page.locator('#tutorialPage').isVisible());assert.equal(await page.locator('#tutorialCounter').textContent(),'1 / 28');
 assert.equal(await page.locator('#tutorialBoard .piece').count(),13);
+// Leaving even the very first page must produce a resumable course.
+await page.locator('#tutorialBack').click();assert.equal(await page.locator('.tutorialStart').textContent(),'Продолжить обучение');await page.locator('.tutorialStart').click();assert.equal(await page.locator('#tutorialCounter').textContent(),'1 / 28');assert(await page.locator('#tutorialPrevious').isDisabled());
 await page.screenshot({path:'previews/tutorial-intro.png'});
+for(const [width,height] of [[320,640],[390,844],[844,390]]){await page.setViewportSize({width,height});const fit=await page.evaluate(()=>{const a=$('tutorialBack').getBoundingClientRect(),b=$('tutorialPrevious').getBoundingClientRect(),r=$('tutorialRestart').getBoundingClientRect();return a.top>=0&&r.right<=innerWidth+1&&b.bottom<=innerHeight+1&&document.documentElement.scrollWidth<=innerWidth+1});assert(fit,'tutorial navigation fits '+width+'x'+height)}await page.setViewportSize({width:390,height:844});
 await page.locator('#tutorialNext').click();assert.equal(await page.locator('#tutorialCounter').textContent(),'2 / 28');
 assert.equal(await page.locator('#tutorialBoard .tutorialTarget').count(),5);
+await page.locator('#tutorialPrevious').click();assert.equal(await page.locator('#tutorialCounter').textContent(),'1 / 28');await page.locator('#tutorialNext').click();await page.locator('#tutorialRestart').click();assert.equal(await page.locator('#tutorialCounter').textContent(),'1 / 28');await page.locator('#tutorialNext').click();
 await page.locator('#tutorialNext').click();
 assert(await page.locator('#tutorialNext').isHidden());
 await page.evaluate(()=>{document.documentElement.dataset.motion='on';window.tutorialAnimated=0;const original=Element.prototype.animate;Element.prototype.animate=function(...args){if(this.closest('#tutorialBoard'))window.tutorialAnimated++;return original.apply(this,args)}});
@@ -365,7 +369,7 @@ for(let j=3;j<28;j++){
  await page.waitForFunction(j=>tutorialSession.index===j+1||tutorialSession.complete,j);
  assert.deepEqual(errs,[]);
 }
-assert(await page.locator('#tutorialNext').isVisible());assert(await page.evaluate(()=>tutorialSession.complete));await page.locator('#tutorialNext').click();
+assert(await page.locator('#tutorialNext').isVisible());assert(await page.locator('#tutorialPlay').isVisible());assert(await page.evaluate(()=>tutorialSession.complete));await page.screenshot({path:'previews/tutorial-complete.png'});await page.locator('#tutorialNext').click();
 assert(await page.locator('#tutorialPage').isHidden());assert(await page.locator('.tutorialLearned').isVisible());
 assert.deepEqual(await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([k])=>k.startsWith('tafl.saved.')||k==='tafl.results.v1'))),prior);
 await page.locator('.tutorialHide').click();assert.equal(await page.locator('.tutorialCard').count(),0);
@@ -374,5 +378,9 @@ await page.locator('#settingsBtn').click();assert.equal(await page.locator('#tut
 await page.locator('#tutorialVisible').check();await page.locator('#closeSettings').click();assert(await page.locator('.tutorialLearned').isVisible());
 await page.locator('.tutorialStart').click();assert.equal(await page.locator('#tutorialCounter').textContent(),'1 / 28');await page.evaluate(()=>window.taflBack());
 assert(await page.locator('.tutorialLearned').isVisible());
+assert(await page.locator('.tutorialStart').isVisible());
+// Finish screen starts an actual game, using the standard save warning.
+await page.locator('.tutorialStart').click();await page.evaluate(()=>{const s=tutorialSession;s.index=tutorialLessons().length-1;s.done=true;rememberTutorialStep(s);advanceTutorial(s)});const existing=await page.evaluate(()=>readSave('brandubh','ai'));await page.locator('#tutorialPlay').click();if(existing){assert(await page.locator('#actionModal').isVisible());assert.deepEqual(await page.evaluate(()=>readSave('brandubh','ai')),existing);await page.locator('#actionButtons button.primary').click()}
+await page.waitForFunction(()=>!$('game').hidden&&!busy);assert.deepEqual(await page.evaluate(()=>[mode,opponent,human,level,clockLimit,e.n]),['brandubh','ai',2,0,0,7]);
 console.log('Structured tutorial: 3 reading pages, 25 auto-advancing exercises, animation, progress, hide/restore and save isolation OK');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}
