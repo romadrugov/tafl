@@ -331,3 +331,16 @@ main.inGame:not(.localGame) #gameActions{width:100%;max-width:460px}
  main.inGame:not(.localGame) .aiBottom{grid-column:1;grid-row:3;align-self:center}
  main.inGame:not(.localGame) #gameActions{grid-column:2;grid-row:2/4;align-self:center}
 }
+
+/* Keep long localized difficulty names and 20-minute clocks together on
+   narrow screens, without changing the normal phone typography. */
+@media(max-width:350px),(max-height:550px) and (orientation:landscape){
+ .aiSeat .playerCard{gap:7px}
+ .aiSeat .countToken{width:22px;height:22px;flex-basis:22px}
+ .aiSeat .playerInfo{padding-left:7px}
+ .aiSeat .playerCard.activePlayer .playerInfo{padding-left:6px}
+ .aiSeat .playerLine{gap:4px}
+ .aiSeat .playerIdentity,.aiSeat .playerMeta{font-size:13px}
+ .aiSeat .playerMeta:before{margin-right:4px}
+ .aiSeat .playerCard .aiClock{padding:2px 5px;min-width:38px;margin-left:1px}
+}

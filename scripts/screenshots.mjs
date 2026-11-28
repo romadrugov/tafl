@@ -282,4 +282,13 @@ for(const [width,height,topInset,bottomInset] of [[393,877,44,24],[390,844,24,24
 }
 await page.evaluate(()=>{document.documentElement.style.removeProperty('--tafl-top');document.documentElement.style.removeProperty('--tafl-bottom');document.body.style.paddingTop='';document.body.style.paddingBottom='';});
 console.log('Centered board, safe-area insets, compact screens, landscape and stable selection verified');
+for(const [width,height] of [[320,600],[844,390]]){
+ await page.setViewportSize({width,height});
+ for(const locale of ['en','es','ru']){
+  await page.evaluate(locale=>{lang=locale;applyLanguage();mode='berserk';opponent='ai';human=1;clockChoice=20;level=3;start();stop();render()},locale);
+  assert(await page.evaluate(()=>[...document.querySelectorAll('.aiSeat .aiClock')].every(x=>!x.hidden&&Math.abs(x.getBoundingClientRect().top-x.parentElement.getBoundingClientRect().top)<3)));
+ }
+}
+console.log('Longest difficulty label and 20-minute timer remain inline in all three locales');
+
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}
