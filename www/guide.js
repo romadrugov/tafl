@@ -13,36 +13,41 @@ const scroll=$('guideScroll');
 function labels(){ $('aboutBtn').textContent=L().about;$('howToPlay').textContent=t('rules');$('guideBack').setAttribute('aria-label',L().return);}
 function sec(title){let s=el('section','guideSection');s.append(el('h3','',title));scroll.append(s);return s}
 function show(){page.hidden=false;scroll.scrollTop=0;scroll.style.animation='none';void scroll.offsetWidth;scroll.style.animation='';$('guideTitle').textContent=kind==='about'?L().about:t('rules');}
-function diagram(type,strong=false,edge=false){
-const ns='http://www.w3.org/2000/svg';const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 150 150');svg.setAttribute('class','guideDiagram');svg.setAttribute('aria-hidden','true');
-function shape(tag,attrs){let x=document.createElementNS(ns,tag);for(let [k,v] of Object.entries(attrs))x.setAttribute(k,v);svg.append(x);return x}
-shape('rect',{x:0,y:0,width:150,height:150,rx:8,fill:'#765337'});
-for(let y=0;y<5;y++)for(let x=0;x<5;x++){let special=type==='special'&&x===2&&y===2,goal=(type==='escape'||type==='special')&&(edge?x===0||y===0||x===4||y===4:(x===0||x===4)&&(y===0||y===4));shape('rect',{x:5+x*28,y:5+y*28,width:28,height:28,fill:(x+y)%2?'#ecd4ae':'#d6b585',stroke:'#a07b4e','stroke-width':.7});if(special||goal){let corner=(x===0||x===4)&&(y===0||y===4),r=corner?(x===0?(y===0?0:270):(y===0?90:180)):y===0?0:y===4?180:x===0?270:90;shape('path',{d:special?markerPaths.throne:corner?markerPaths.corner:markerPaths.edge,transform:'translate('+(5+x*28)+' '+(5+y*28)+') scale(.583333) rotate('+(special?0:r)+' 24 24)',stroke:'#745738','stroke-width':2.1,'stroke-linecap':'round','stroke-linejoin':'round',fill:'none'})}}
-const center=(x)=>19+x*28;
-function p(x,y,c){shape('circle',{cx:center(x),cy:center(y),r:10.8,fill:c===1?'#292b2b':'#f5f3ec',stroke:c===1?'#101315':'#b8b6ad','stroke-width':1.4});if(c===3)shape('path',{d:piecePaths[3],transform:'translate('+(center(x)-9)+' '+(center(y)-9)+') scale(.375)',fill:'none',stroke:'#292b2b','stroke-width':3,'stroke-linecap':'round','stroke-linejoin':'round'})}
-function arrow(x,y,x2,y2){let a=center(x),b=center(y),c=center(x2),d=center(y2);shape('path',{d:'M'+a+' '+b+' L'+c+' '+d,stroke:'#27744a','stroke-width':3,'stroke-dasharray':'4 3',fill:'none'});shape('circle',{cx:c,cy:d,r:5,fill:'#27744a'})}
-if(type==='move'){arrow(2,2,2,0);arrow(2,2,4,2);arrow(2,2,0,2);arrow(2,2,2,4);p(2,2,2)}
-if(type==='capture'){p(1,2,1);p(2,2,2);p(3,2,1);shape('path',{d:'M67 67l16 16m0-16L67 83',stroke:'#bf4c36','stroke-width':3})}
-if(type==='escape'){if(edge){arrow(2,2,2,0);p(2,2,3)}else{arrow(0,3,0,0);p(0,3,3)}}
-if(type==='king'){p(2,2,3);p(1,2,1);p(3,2,1);if(strong){p(2,1,1);p(2,3,1)}}
-if(type==='special'){p(2,2,3)}
-if(type==='shield'){p(1,0,2);p(2,0,2);p(3,0,1);p(1,1,1);p(2,1,1);shape('rect',{x:5,y:5,width:28,height:28,fill:'none',stroke:'#739955','stroke-width':2})}
-if(type==='fort'){for(const [x,y] of [[0,0],[0,1],[1,1],[2,1],[3,1],[3,0]])p(x,y,2);p(1,0,3);arrow(1,0,2,0);p(2,3,1);p(4,2,1)}
-return svg}
-function card(parent,n,title,txt,type,strong=false,edge=false){let c=el('article','guideCard'+(type?'':' guideFull')),d=el('div');d.append(el('div','guideKicker',L().step+' '+String(n).padStart(2,'0')),el('h4','',title),el('p','',txt));c.append(d);if(type)c.append(diagram(type,strong,edge));parent.append(c)}
-function about(){kind='about';scroll.replaceChildren();const l=L(),hero=el('div','guideHero');hero.innerHTML='<img src="icon.svg" alt=""><div class="guideKicker"></div><h1>TAFL</h1><p></p><div class="guideMetrics"></div>';hero.querySelector('.guideKicker').textContent=l.overview;hero.querySelector('p').remove();for(let [v,label] of [[String(modes.length),l.variants],['4',l.levels],['✓',l.offline]]){let d=el('div');d.append(el('b','',v),el('small','',label));hero.querySelector('.guideMetrics').append(d)}scroll.append(hero);
+const guideLocales={en:{before:'Before',after:'After',moves:'Move',captured:'Captured'},ru:{before:'До хода',after:'После хода',moves:'Ход',captured:'Захват'},es:{before:'Antes',after:'Después',moves:'Jugada',captured:'Captura'}};
+const gl=()=>guideLocales[lang]||guideLocales.en;
+function guideBounds(ex){
+ const e=ex.engine;if(ex.full)return {x:0,y:0,n:e.n};
+ const points=[...ex.path,...ex.cap];ex.b.forEach((p,i)=>{if(p)points.push(i)});
+ const xs=points.map(i=>i%e.n),ys=points.map(i=>Math.floor(i/e.n));
+ const size=Math.min(e.n,Math.max(4,Math.max(...xs)-Math.min(...xs)+2,Math.max(...ys)-Math.min(...ys)+2));
+ return {x:Math.max(0,Math.min(e.n-size,Math.floor((Math.min(...xs)+Math.max(...xs)-size+1)/2))),y:Math.max(0,Math.min(e.n-size,Math.floor((Math.min(...ys)+Math.max(...ys)-size+1)/2))),n:size};
+}
+function guideBoard(ex,after,bounds){
+ const e=ex.engine,b=after?ex.after:ex.b,frame=el('figure','guideFrame'),grid=el('div','guideDiagram guidePosition');
+ grid.style.gridTemplateColumns='repeat('+bounds.n+',minmax(0,1fr))';
+ for(let y=bounds.y;y<bounds.y+bounds.n;y++)for(let x=bounds.x;x<bounds.x+bounds.n;x++){
+  const i=y*e.n+x,p=b[i],c=el('div','miniCell '+((x+y)%2?'alt ':'')+(e.restricted(i)?'restricted ':'')+(e.goal(i)?'goal ':''));
+  c.dataset.square=e.name(i);if(ex.marks?.includes(i))c.classList.add('guideMarked');if(after&&ex.cap.includes(i))c.classList.add('guideCaptured');if(ex.path.includes(i)&&(!after||i===ex.path.at(-1)))c.classList.add('guideMoved');
+  c.innerHTML=squareIcon(e,i);if(p){const piece=el('span','piece '+pieceClass(p));piece.innerHTML=pieceIcon(p);piece.dataset.piece=String(p);c.append(piece)}grid.append(c);
+ }
+ if(!after&&ex.path.length){const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 '+bounds.n*48+' '+bounds.n*48);svg.setAttribute('class','guideMoveArrow');svg.setAttribute('aria-hidden','true');
+  const xy=i=>[(i%e.n-bounds.x+.5)*48,(Math.floor(i/e.n)-bounds.y+.5)*48];
+  for(let i=1;i<ex.path.length;i++){const [x,y]=xy(ex.path[i-1]),[a,b]=xy(ex.path[i]),len=Math.hypot(a-x,b-y),dx=(a-x)/len,dy=(b-y)/len;const p=document.createElementNS(ns,'path');p.setAttribute('d','M'+(x+dx*15)+' '+(y+dy*15)+' L'+(a-dx*7)+' '+(b-dy*7)+' M'+(a-dx*17-dy*6)+' '+(b-dy*17+dx*6)+' L'+(a-dx*7)+' '+(b-dy*7)+' L'+(a-dx*17+dy*6)+' '+(b-dy*17-dx*6));p.setAttribute('fill','none');p.setAttribute('stroke','#266744');p.setAttribute('stroke-width','3.5');p.setAttribute('stroke-linecap','round');p.setAttribute('stroke-linejoin','round');svg.append(p)}grid.append(svg);
+ }
+ frame.append(grid);if(ex.path.length)frame.append(el('figcaption','',after?gl().after:gl().before));return frame;
+}
+function card(parent,item){const idx=lang==='ru'?1:lang==='es'?2:0,c=el('article','guideCard guideFull');c.dataset.rule=item.id;c.append(el('h4','',item.title[idx]),el('p','',item.body[idx]));if(item.example){const ex=item.example,bounds=guideBounds(ex),visual=el('div','guideExamples'+(ex.path.length?' paired':''));visual.append(guideBoard(ex,false,bounds));if(ex.path.length)visual.append(guideBoard(ex,true,bounds));c.append(visual)}parent.append(c)}
+function about(){kind='about';scroll.classList.remove('ruleReference');scroll.replaceChildren();const l=L(),hero=el('div','guideHero');hero.innerHTML='<img src="icon.svg" alt=""><div class="guideKicker"></div><h1>TAFL</h1><p></p><div class="guideMetrics"></div>';hero.querySelector('.guideKicker').textContent=l.overview;hero.querySelector('p').remove();for(let [v,label] of [[String(modes.length),l.variants],['4',l.levels],['✓',l.offline]]){let d=el('div');d.append(el('b','',v),el('small','',label));hero.querySelector('.guideMetrics').append(d)}scroll.append(hero);
 let shots=sec(l.screens),rail=el('div','guideRail');['gallery','setup','game'].forEach((name,i)=>{let f=el('figure'),img=el('img');img.src='shots/'+name+'.png';img.alt=l.shots[i];img.loading='lazy';f.append(img,el('figcaption','',l.shots[i]));rail.append(f)});shots.append(rail);
 let list=sec(l.choose);for(let k of modes){let b=el('button','guideVariant'),d=el('div');d.append(el('b','',variants[k].title),el('small','',sub(k)),el('small','',t(k+'Desc')));b.append(preview(k),d,el('span','arrow','›'));b.onclick=()=>rules(k,true);list.append(b)}
-let footer=el('div','guideFoot','0.11.3');scroll.append(footer);show()}
-function rules(k,back=false){kind='rules';selected=k;fromAbout=back;scroll.replaceChildren();const l=L(),v=variants[k],engine=Engine(k),strong=engine.strong,edge=!engine.corner;const hero=el('div','guideRuleHero'),d=el('div');d.append(el('div','guideKicker',sub(k)),el('h3','',v.title),el('p','',t(k+'Desc')));hero.append(preview(k),d);scroll.append(hero);
-let section=sec(l.how);card(section,1,l.move,engine.berserk?t('moveBerserk'):engine.magpie?t('moveMagpie'):l.moveText,'move');card(section,2,l.capture,engine.throneless?t('basics'):l.captureText,'capture');card(section,3,l.escape,edge?l.escapeEdge:l.escapeCorner,'escape',strong,edge);card(section,4,l.king,engine.magpie?t('magpieRule'):engine.throneless?t('noThrone'):strong?l.strongText:l.weakText,'king',strong,edge);card(section,5,l.special,engine.throneless?t('noThrone'):edge?l.specialEdge:l.specialCorner,engine.throneless?'':'special',strong,edge);if(engine.berserk)card(section,6,t('officers'),t('berserkRule'),'');
-if(k==='copenhagen'){card(section,6,l.shieldTitle,t('shield'),'shield',true,false);card(section,7,t('fortWin'),t('fortRule'),'fort',true,false)}
-let more=el('details','guideDetails');more.append(el('summary','',l.full),el('p','',ruleText(k)));scroll.append(more);let end=el('div','guideFoot',(['historical','ardri','tawlbwrdd','berserk'].includes(k)?t('repeatLoss'):t('endRule'))+(k==='hnefatafl'?' '+t('blockedRule'):''));scroll.append(end);show()}
+let footer=el('div','guideFoot','0.11.4');scroll.append(footer);show()}
+function rules(k,back=false){kind='rules';selected=k;fromAbout=back;scroll.replaceChildren();scroll.classList.add('ruleReference');const v=variants[k],hero=el('div','guideRuleHero guideReferenceHero'),d=el('div');d.append(el('h3','',v.title),el('p','',sub(k)));hero.append(d);scroll.append(hero);const section=el('section','guideSection guideRuleList');scroll.append(section);for(const item of GuideRules(Engine,TutorialLessons,k))card(section,item);show()}
 function close(){const previous=source;page.hidden=true;source=null;if(previous==='settings')$('settingsModal').hidden=false;else if(previous==='game'&&matchPaused)showPauseMenu()}
 $('guideBack').onclick=()=>{if(kind==='rules'&&fromAbout)about();else close()};
 $('aboutBtn').onclick=()=>{source='settings';$('settingsModal').hidden=true;about()};
 $('howToPlay').onclick=()=>{source='setup';rules(mode)};
 openRules=(k=mode)=>{source=$('game').hidden?'gallery':'game';rules(k)};
+const previousBack=window.taflBack;window.taflBack=()=>{if(!page.hidden){$('guideBack').click();return}previousBack()};
 $('gameRules').onclick=()=>openRules(mode);
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!page.hidden){ev.stopImmediatePropagation();if(kind==='rules'&&fromAbout)about();else close()}},true);
 const baseLanguage=applyLanguage;applyLanguage=()=>{baseLanguage();labels()};labels();

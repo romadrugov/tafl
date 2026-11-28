@@ -514,3 +514,29 @@ main.inGame:not(.localGame).resultGame #game{--match-board-width:min(100%,max(19
 @media(max-width:350px){#tutorialPage{--lesson-gutter:14px}.tutorialIntro h3{font-size:24px}.tutorialIntro p{font-size:15px;line-height:1.42}.tutorialContent{gap:10px}.tutorialBoardSlot{flex-basis:180px;min-height:180px}}
 @media(orientation:portrait) and (max-height:700px){.tutorialProgressRow{padding-bottom:6px}.tutorialContent{padding-top:8px;gap:10px}.tutorialIntro p{font-size:15px;line-height:1.42}.tutorialIntro h3{font-size:24px}.tutorialBoardSlot{flex-basis:180px;min-height:180px}.tutorialFooter{padding-bottom:8px}}
 @media(orientation:landscape) and (max-height:550px){#tutorialPage{--lesson-gutter:16px}.tutorialHeader,.tutorialProgressRow,.tutorialFooter{width:min(100%,820px)}.tutorialProgressRow{padding-bottom:4px}.tutorialContent{display:grid;grid-template-columns:minmax(140px,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;align-content:start;gap:6px 20px;padding:6px var(--lesson-gutter)}.tutorialBoardSlot{grid-column:1;grid-row:1/3;min-height:140px;align-self:stretch}.tutorialIntro{grid-column:2;grid-row:1;align-self:start}.tutorialIntro h3{font-size:24px}.tutorialIntro p{font-size:15px;line-height:1.4}#tutorialBoard{width:min(100%,400px,100cqh);grid-column:auto;grid-row:auto}#tutorialFeedback{grid-column:2;grid-row:2;align-self:end}.tutorialFooter{padding-top:5px;padding-bottom:6px}}
+
+/* 0.11.4 — illustrated per-variant reference, matching the actual game. */
+#guidePage .guideHead{background:var(--bg);border-bottom:1px solid var(--line);padding:4px 16px;gap:8px}
+#guideBack{background:transparent;border:0;box-shadow:none}
+#guidePage .guideHead h2{font-size:19px;font-weight:720}
+.guideScroll.ruleReference{padding:14px 16px 24px}
+.guideReferenceHero{background:transparent!important;border:0;padding:4px 2px 12px;border-radius:0}
+.guideReferenceHero h3{font-size:28px;line-height:1.12;letter-spacing:-.5px;margin:0 0 5px}
+.guideReferenceHero p{font-size:14px;color:var(--muted);margin:0}
+.guideRuleList{margin:0}
+.guideRuleList .guideCard{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:15px;margin:0 0 12px;background:var(--panel);border-color:var(--line);border-radius:14px}
+.guideRuleList .guideCard h4{font-size:19px;font-weight:720;line-height:1.2;margin:0;letter-spacing:-.2px}
+.guideRuleList .guideCard p{font-size:15px;line-height:1.5;color:var(--text)}
+.guideExamples{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;justify-items:center}
+.guideExamples.paired{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.guideFrame{width:min(100%,300px);min-width:0;margin:0}
+.guidePosition{width:100%;aspect-ratio:1;position:relative;display:grid;border:3px solid #765337;border-radius:6px;overflow:hidden;background:#d6b585}
+.guidePosition .miniCell{position:relative;min-width:0;min-height:0}
+.guidePosition .piece{width:76%;height:76%;z-index:1}
+.guidePosition .guideMarked,.guidePosition .guideMoved{background:#b6c4a5!important}
+.guidePosition .guideCaptured{box-shadow:inset 0 0 0 2px #a13e36!important}
+.guideMoveArrow{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none}
+.guideFrame figcaption{text-align:center;font-size:13px;color:var(--muted);margin-top:5px}
+:root[data-theme="light"] .guideRuleList .guideCard{background:#fff8eb}
+:root[data-theme="light"] .guideRuleList .guideCard p{color:var(--text)}
+@media(max-width:340px){.guideScroll.ruleReference{padding-inline:12px}.guideRuleList .guideCard{padding:12px}.guideRuleList .guideCard h4{font-size:18px}.guideExamples.paired{gap:7px}}

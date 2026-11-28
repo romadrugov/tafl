@@ -155,3 +155,7 @@ Refined tutorial typography and spacing, persistent previous/restart navigation,
 ## 0.11.3
 
 Top-aligned tutorial content, larger readable lesson titles and body text, aligned header/progress/footer gutters, compact navigation and an adaptive square board using the available content height. Preserves safe-area insets, landscape layout, course logic, progress and saves.
+
+## 0.11.4
+
+Rebuilt all nine per-variant rule references using engine-validated before/after illustrations with real square markings and piece symbols. Expanded Berserk into seven separate special-rule examples, corrected Copenhagen fort explanation, Magpie edge behavior, throneless variants and distinct king-capture situations. Reference documents the implemented game, including third-repetition outcomes. No game-engine changes. External published rules may differ (notably Copenhagen/Brandubh/Tablut repetition, Tawlbwrdd throne, and exhaustive draw/fort adjudication); these are follow-up ruleset decisions, not silently changed in a reference update. Sources: https://aagenielsen.dk/berserk_rules.php , https://aagenielsen.dk/copenhagen_rules.php , https://aagenielsen.dk/fetlar_rules_en.php , https://aagenielsen.dk/historical_hnefatafl_rules.php .
