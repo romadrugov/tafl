@@ -324,41 +324,55 @@ await page.locator('#undo').click();assert.equal(await page.evaluate(()=>hist.at
 assert.equal(await page.evaluate(()=>readResults().filter(x=>x.id===gameId).length),0);
 await page.locator('#redo').click();assert.equal(await page.evaluate(()=>hist.at(-1).win),2);assert.equal(await page.evaluate(()=>clockLeft(2)),240000);assert.equal(await page.evaluate(()=>readResults().filter(x=>x.id===gameId).length),1);
 console.log('Timed result rollback, timeout rollback, redo, clock restoration and top result placement OK');
-// Complete the course through the actual UI, verify persistence and isolation.
+// Complete the restructured course through actual UI, including automatic
+// transitions, animation, exit/resume, reading pages and saved-game isolation.
 await page.setViewportSize({width:390,height:844});
 await page.evaluate(()=>{menu();lang='ru';applyLanguage();setTutorialVisible(true)});
 assert.equal(await page.locator('#variants .slide').first().getAttribute('data-variant'),'tutorial');
 const prior=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([k])=>k.startsWith('tafl.saved.')||k==='tafl.results.v1')));
 await page.locator('.tutorialStart').click();
-assert(await page.locator('#tutorialPage').isVisible());
-await page.locator('#tutorialBoard [data-cell="15"]').click(); // select B5
-await page.locator('#tutorialBoard [data-cell="18"]').click(); // E5
-assert(await page.locator('#tutorialNext').isEnabled());
+assert(await page.locator('#tutorialPage').isVisible());assert.equal(await page.locator('#tutorialCounter').textContent(),'1 / 28');
+assert.equal(await page.locator('#tutorialBoard .piece').count(),13);
+await page.screenshot({path:'previews/tutorial-intro.png'});
+await page.locator('#tutorialNext').click();assert.equal(await page.locator('#tutorialCounter').textContent(),'2 / 28');
+assert.equal(await page.locator('#tutorialBoard .tutorialTarget').count(),5);
 await page.locator('#tutorialNext').click();
-await page.evaluate(()=>window.taflBack());
-assert(await page.locator('#tutorialPage').isHidden());
+assert(await page.locator('#tutorialNext').isHidden());
+await page.evaluate(()=>{document.documentElement.dataset.motion='on';window.tutorialAnimated=0;const original=Element.prototype.animate;Element.prototype.animate=function(...args){if(this.closest('#tutorialBoard'))window.tutorialAnimated++;return original.apply(this,args)}});
+await page.locator('#tutorialBoard [data-cell="15"]').click();
+await page.locator('#tutorialBoard [data-cell="18"]').click();
+assert((await page.evaluate(()=>window.tutorialAnimated))>0);
+assert(await page.locator('#tutorialNext').isHidden());
+await page.waitForFunction(()=>tutorialLessons()[tutorialSession.index].id==='block');
+await page.evaluate(()=>window.taflBack());assert(await page.locator('#tutorialPage').isHidden());
 await page.reload();await page.locator('.tutorialStart').click();
-assert.equal(await page.locator('#tutorialCounter').textContent(),'2 / 25');
-for(let j=1;j<25;j++){
- const l=await page.evaluate(()=>{const s=tutorialSession,l=tutorialLessons()[s.index];return {path:l.path,quiz:l.quiz,index:s.index}});
+assert.equal(await page.locator('#tutorialCounter').textContent(),'4 / 28');
+for(let j=3;j<28;j++){
+ const l=await page.evaluate(()=>{const s=tutorialSession,l=tutorialLessons()[s.index];return {path:l.path,quiz:l.quiz,index:s.index,id:l.id,read:!!l.read}});
+ assert.equal(l.index,j);
+ if(l.read){assert(await page.locator('#tutorialNext').isVisible());await page.locator('#tutorialNext').click();continue}
+ assert(await page.locator('#tutorialNext').isHidden());
  if(l.quiz)assert(await page.locator('#tutorialHint').isVisible());
  for(const [step,i] of l.path.entries()){
   await page.locator('#tutorialBoard [data-cell="'+i+'"]').click();
-  const actual=await page.evaluate(()=>({selected:tutorialSession.selected,path:tutorialSession.path,done:tutorialSession.done,message:tutorialSession.message,id:tutorialLessons()[tutorialSession.index].id}));
+  const actual=await page.evaluate(()=>({selected:tutorialSession.selected,path:tutorialSession.path,done:tutorialSession.done,message:tutorialSession.message}));
   if(step===0)assert.equal(actual.selected,i,JSON.stringify(actual));
-  else assert.deepEqual(actual.path,l.path.slice(0,step+1),JSON.stringify({step,expected:l.path,actual}));
+  else assert.deepEqual(actual.path,l.path.slice(0,step+1),JSON.stringify({id:l.id,step,actual}));
+  if(step>0&&step<l.path.length-1)await page.waitForFunction(()=>!tutorialSession.locked);
  }
- assert(await page.locator('#tutorialNext').isEnabled(),JSON.stringify(await page.evaluate(()=>({lesson:tutorialLessons()[tutorialSession.index].id,done:tutorialSession.done,disabled:$('tutorialNext').disabled,message:tutorialSession.message}))));
- if(j===18||j===19){await page.evaluate(()=>renderTutorial());assert(await page.locator('#tutorialNext').isEnabled());assert.deepEqual(errs,[]);await page.screenshot({path:'previews/tutorial-'+(j===18?'chain':'commanders')+'.png'});}
- await page.locator('#tutorialNext').click();
+ assert(await page.evaluate(()=>tutorialSession.done),l.id);
+ if(['capture','chain','commanders'].includes(l.id))await page.screenshot({path:'previews/tutorial-'+l.id+'.png'});
+ await page.waitForFunction(j=>tutorialSession.index===j+1||tutorialSession.complete,j);
+ assert.deepEqual(errs,[]);
 }
+assert(await page.locator('#tutorialNext').isVisible());assert(await page.evaluate(()=>tutorialSession.complete));await page.locator('#tutorialNext').click();
 assert(await page.locator('#tutorialPage').isHidden());assert(await page.locator('.tutorialLearned').isVisible());
 assert.deepEqual(await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([k])=>k.startsWith('tafl.saved.')||k==='tafl.results.v1'))),prior);
 await page.locator('.tutorialHide').click();assert.equal(await page.locator('.tutorialCard').count(),0);
 await page.reload();assert.equal(await page.locator('.tutorialCard').count(),0);
 await page.locator('#settingsBtn').click();assert.equal(await page.locator('#tutorialVisible').isChecked(),false);
 await page.locator('#tutorialVisible').check();await page.locator('#closeSettings').click();assert(await page.locator('.tutorialLearned').isVisible());
-await page.locator('.tutorialStart').click();assert.equal(await page.locator('#tutorialCounter').textContent(),'1 / 25');await page.evaluate(()=>window.taflBack());
+await page.locator('.tutorialStart').click();assert.equal(await page.locator('#tutorialCounter').textContent(),'1 / 28');await page.evaluate(()=>window.taflBack());
 assert(await page.locator('.tutorialLearned').isVisible());
-console.log('Tutorial: all 25 legal exercises, replay, progress, hidden preference and saved-game isolation OK');
+console.log('Structured tutorial: 3 reading pages, 25 auto-advancing exercises, animation, progress, hide/restore and save isolation OK');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}

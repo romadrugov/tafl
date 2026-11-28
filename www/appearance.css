@@ -441,3 +441,17 @@ main.inGame:not(.localGame).resultGame #game{--match-board-width:min(100%,max(19
 #tutorialFeedback{height:42px;min-height:42px;flex-shrink:0}
 #tutorialBoard .sq{transition:none}
 #tutorialBoard .sq:active{filter:none}
+
+/* Structured course: reading pages advance at the player's pace; practical
+ exercises auto-advance after the same move/capture animation as a match. */
+#tutorialChapter{display:block;font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px}
+#tutorialVariant{display:block;font-size:12px;color:var(--muted)}
+#tutorialChapter[hidden],#tutorialVariant[hidden],#tutorialBoard[hidden],#tutorialFeedback[hidden],#tutorialNext[hidden]{display:none!important}
+#tutorialBoard.tutorialRead .sq{pointer-events:none}
+.tutorialIntro p{line-height:1.5}
+.tutorialContent{gap:10px}
+.tutorialActions{min-height:44px}
+.tutorialActions:has(#tutorialHint[hidden]):has(#tutorialNext[hidden]){min-height:44px}
+#tutorialBoard .capturedGhost{pointer-events:none}
+#tutorialFeedback{height:42px;min-height:42px}
+@media(max-height:700px) and (orientation:portrait){#tutorialBoard{width:min(100%,max(175px,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 320px)))}.tutorialIntro h3{font-size:19px}.tutorialIntro p{font-size:13px}.tutorialContent{padding:12px}}

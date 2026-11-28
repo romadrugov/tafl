@@ -143,3 +143,7 @@ Padded active player highlight; result title and reason above the board in AI ga
 ## 0.11.0
 
 Unified interactive tutorial: first optional gallery card, 25 engine-validated exercises, three languages, saved progress and completion, replay, manual hide and settings restore. Training uses separate state and never touches match saves or statistics. Removed redundant gallery descriptions and setup/settings explanatory captions. Existing per-variant rules remain available.
+
+## 0.11.1
+
+Structured tutorial: game premise and annotated board first, then movement, captures, winning, variant differences and separate Magpie, Copenhagen and Berserk chapters. Three reading pages and 25 interactive exercises, with automatic transitions after real game movement/capture animations. Reading pages advance manually; completed courses retain their status and can be replayed. Existing tutorial visibility and progress IDs preserved. No engine-rule changes.
