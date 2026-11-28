@@ -131,3 +131,7 @@ Center the board vertically in AI matches using equal flexible regions above and
 ### Android test releases
 
 Successful Android builds from `main` automatically publish their signed APK and its SHA-256 checksum as a [GitHub pre-release](https://github.com/romadrugov/tafl/releases). Install the APK directly from Assets, without downloading an Actions ZIP. Each version's first release uses `v<version>`; subsequent successful builds of the same version receive a unique CI tag. Existing releases and tags are not overwritten. Unsigned/debug builds and AABs remain in Actions artifacts. Publishing requires all tests, signing and artifact uploads to succeed; the release job has scoped repository contents-write permission.
+
+## 0.10.5
+
+Improve dark-theme black player token contrast, show current turn with a subtle highlighted player row, accent line and dot, and place compact undo/redo buttons beside the human's information in AI matches. Keep the board centered, full result controls, Berserk continuation action, accessible turn announcements and local face-to-face toolbar. No changes to game rules, AI, clocks, save schema or release signing.

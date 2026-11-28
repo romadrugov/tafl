@@ -182,7 +182,7 @@ await page.locator('#opponents [data-value="ai"]').click();assert.equal(await pa
 await page.screenshot({path:'previews/setup-polished.png'});
 await page.locator('#setupBack').click();assert.equal(await page.locator('#brandHeader').isVisible(),true);
 await page.evaluate(()=>{clockChoice=0;mode='brandubh';opponent='ai';human=1;start()});
-assert.equal(await page.locator('#historyBtn').count(),0);assert.equal(await page.locator('#gameActions').isVisible(),true);assert.equal(await page.locator('#resultLog').isHidden(),true);
+assert.equal(await page.locator('#historyBtn').count(),0);assert.equal(await page.locator('#gameActions').isHidden(),true);assert.equal(await page.locator('#aiBottom #undo').isVisible(),true);assert.equal(await page.locator('#resultLog').isHidden(),true);
 await page.locator('#menuBtn').click();assert.equal(await page.locator('#closeAction').isHidden(),true);assert.equal(await page.locator('#actionText').isHidden(),true);
 await page.screenshot({path:'previews/pause-polished.png'});await page.locator('#actionButtons button').filter({hasText:/^Restart$/}).click();
 assert.equal(await page.locator('#actionText').isVisible(),true);await page.evaluate(()=>window.taflBack());assert.equal(await page.locator('#actionText').isHidden(),true);
@@ -220,13 +220,13 @@ for(const locale of ['en','es','ru']){
  for(const humanSide of [1,2]){
   await page.evaluate(({locale,humanSide})=>{lang=locale;applyLanguage();clockChoice=0;mode='brandubh';opponent='ai';human=humanSide;start();stop();render()},{locale,humanSide});
   assert.equal(await page.locator('#title').textContent(),'Brandubh');
-  const a=await page.locator('#undo').boundingBox(),b=await page.locator('#redo').boundingBox(),s=await page.locator('#status').boundingBox();
-  assert(a&&b&&s&&Math.abs(a.y-b.y)<1&&s.y>=a.y+a.height);
+  const a=await page.locator('#undo').boundingBox(),b=await page.locator('#redo').boundingBox(),s=await page.locator('#aiBottom').boundingBox();
+  assert(a&&b&&s&&Math.abs(a.y-b.y)<1&&a.y>=s.y-1&&a.y+a.height<=s.y+s.height+1);assert(await page.locator('#status').isHidden());
   assert.equal(await page.locator('#redo').isDisabled(),true);
   const black=await page.locator('#blackCard').boundingBox(),white=await page.locator('#whiteCard').boundingBox(),bc=await page.locator('#bc').boundingBox(),wc=await page.locator('#wc').boundingBox();
   const board=await page.locator('#boardWrap').boundingBox(),top=humanSide===1?white:black,bottom=humanSide===1?black:white;
   assert(Math.abs(black.height-white.height)<1&&top.y+top.height<=board.y+1&&bottom.y>=board.y+board.height-1);
-  assert(top.height<=44&&bottom.height<=44&&Math.abs(black.x-white.x)<1);
+  assert(top.height<=46&&bottom.height<=46&&Math.abs(black.x-white.x)<1);
   assert(await page.locator(humanSide===1?'#blackMeta':'#whiteMeta').isHidden());
   assert(await page.locator('#blackAiClock').isHidden());assert(await page.locator('#whiteAiClock').isHidden());
   await page.evaluate(()=>{future=[hist.at(-1)];render()});
@@ -257,7 +257,7 @@ for(const theme of ['light','dark']){
   for(const humanSide of [1,2]){
    await page.setViewportSize({width,height});
    await page.evaluate(({modeName,humanSide,theme})=>{document.documentElement.dataset.theme=theme;clockChoice=5;mode=modeName;opponent='ai';human=humanSide;level=3;start();stop();render()},{modeName,humanSide,theme});
-   const fit=await page.evaluate(()=>{const top=$('aiTop').getBoundingClientRect(),bottom=$('aiBottom').getBoundingClientRect(),board=$('boardWrap').getBoundingClientRect(),controls=$('gameActions').getBoundingClientRect();return {top:top.bottom<=board.top+1,bottom:bottom.top>=board.bottom-1,controls:controls.top>=bottom.bottom-1,wide:document.documentElement.scrollWidth<=innerWidth+1,visible:controls.bottom<=innerHeight+1,clock:[...document.querySelectorAll('.aiSeat .aiClock')].every(x=>!x.hidden&&x.getBoundingClientRect().width<80&&Math.abs(x.getBoundingClientRect().top-x.parentElement.getBoundingClientRect().top)<3),side:$('aiBottom').firstElementChild.id}});
+   const fit=await page.evaluate(()=>{const top=$('aiTop').getBoundingClientRect(),bottom=$('aiBottom').getBoundingClientRect(),board=$('boardWrap').getBoundingClientRect(),controls=$('gameActions').getBoundingClientRect();return {top:top.bottom<=board.top+1,bottom:bottom.top>=board.bottom-1,controls:document.getElementById('moveControls').parentElement.id==='aiBottom',wide:document.documentElement.scrollWidth<=innerWidth+1,visible:bottom.bottom<=innerHeight+1,clock:[...document.querySelectorAll('.aiSeat .aiClock')].every(x=>!x.hidden&&x.getBoundingClientRect().width<80&&Math.abs(x.getBoundingClientRect().top-x.parentElement.getBoundingClientRect().top)<3),side:$('aiBottom').firstElementChild.id}});
    assert(fit.top&&fit.bottom&&fit.controls&&fit.wide&&fit.visible&&fit.clock,JSON.stringify(fit));assert.equal(fit.side,humanSide===1?'blackCard':'whiteCard');
    await page.screenshot({path:'previews/compact-'+theme+'-'+modeName+'-'+humanSide+'.png'});
   }
@@ -272,7 +272,7 @@ for(const [width,height,topInset,bottomInset] of [[393,877,44,24],[390,844,24,24
  for(const variant of ['brandubh','tablut','berserk']){
   for(const theme of ['light','dark']){
    await page.evaluate(({variant,theme,topInset,bottomInset})=>{document.documentElement.dataset.theme=theme;document.documentElement.style.setProperty('--tafl-top',topInset+'px');document.documentElement.style.setProperty('--tafl-bottom',bottomInset+'px');document.body.style.paddingTop=topInset+'px';document.body.style.paddingBottom=bottomInset+'px';mode=variant;opponent='ai';human=1;clockChoice=5;level=0;start();stop();render()},{variant,theme,topInset,bottomInset});
-   const rect=await page.evaluate(()=>{const b=$('board').getBoundingClientRect(),t=$('aiTop').getBoundingClientRect(),p=$('aiBottom').getBoundingClientRect(),a=$('gameActions').getBoundingClientRect();return {center:(b.top+b.bottom)/2,top:b.top,width:b.width,fit:t.bottom<=b.top&&p.top>=b.bottom&&a.bottom<=innerHeight+1,horizontal:document.documentElement.scrollWidth<=innerWidth+1}});
+   const rect=await page.evaluate(()=>{const b=$('board').getBoundingClientRect(),t=$('aiTop').getBoundingClientRect(),p=$('aiBottom').getBoundingClientRect(),a=$('gameActions').getBoundingClientRect();return {center:(b.top+b.bottom)/2,top:b.top,width:b.width,fit:t.bottom<=b.top&&p.top>=b.bottom&&p.bottom<=innerHeight+1,horizontal:document.documentElement.scrollWidth<=innerWidth+1}});
    assert(rect.fit&&rect.horizontal,JSON.stringify(rect));assert(Math.abs(rect.center-(height+topInset-bottomInset)/2)<22,JSON.stringify(rect));
    await page.evaluate(()=>{sel=e.moves(hist.at(-1).b,human)[0][0];render()});
    const selected=await page.locator('#board').boundingBox();assert(Math.abs(selected.y-rect.top)<1&&Math.abs(selected.width-rect.width)<1);
@@ -292,4 +292,21 @@ for(const [width,height] of [[320,600],[320,568],[844,390],[640,360]]){
 }
 console.log('Longest difficulty label and 20-minute timer remain inline in all three locales');
 
+// Turn indicator follows the actual side; undo/redo remain the same real
+// controls, including timer restrictions and local mode switching.
+for(const theme of ['light','dark']){
+ for(const side of [1,2]){
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(({theme,side})=>{document.documentElement.dataset.theme=theme;opponent='ai';human=side;mode='brandubh';clockChoice=0;level=0;start();stop();render()},{theme,side});
+  for(const turn of [1,2]){
+   await page.evaluate(turn=>{hist[hist.length-1]={...hist.at(-1),turn};render()},turn);
+   const x=await page.evaluate(()=>{const p=$('aiBottom').getBoundingClientRect(),c=$('aiBottom').firstElementChild.getBoundingClientRect(),u=$('undo').getBoundingClientRect(),r=$('redo').getBoundingClientRect();return {active:[...document.querySelectorAll('.aiSeat .activePlayer')].map(e=>e.id),inline:u.left>=c.right-1&&Math.abs(u.top+u.height/2-(p.top+p.height/2))<2&&r.right<=p.right+1,live:$('gameActions').hidden,accessible:$('turnAnnouncement').textContent.length>0}});
+   assert.deepEqual(x.active,[turn===1?'blackCard':'whiteCard']);assert(x.inline&&x.live&&x.accessible,JSON.stringify(x));
+  }
+  await page.screenshot({path:'previews/inline-turn-'+theme+'-'+side+'.png'});
+ }
+}
+await page.evaluate(()=>{clockChoice=5;opponent='ai';human=1;start();stop();render()});assert(await page.locator('#undo').isDisabled());assert(await page.locator('#redo').isDisabled());
+await page.evaluate(()=>{clockChoice=0;opponent='local';start();stop();render()});assert(await page.locator('#gameActions #moveControls').isVisible());
+console.log('Active turn indicator, compact inline history, timed restrictions and local toolbar verified');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}

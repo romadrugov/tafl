@@ -83,7 +83,7 @@ jobs:
           "$TOOLS/apksigner" sign --ks "$KEYSTORE" --ks-type PKCS12 --ks-key-alias tafl --ks-pass env:TAFL_KEYSTORE_PASSWORD --key-pass env:TAFL_KEYSTORE_PASSWORD --out "$APK" "$RUNNER_TEMP/tafl-aligned.apk"
           "$TOOLS/apksigner" verify --verbose --print-certs "$APK" | tee signed/signature.txt
           "$TOOLS/aapt" dump badging "$APK" | sed -n '1p' > signed/package.txt
-          grep -F "name='com.taflclub' versionCode='37' versionName='0.10.4'" signed/package.txt
+          grep -F "name='com.taflclub' versionCode='38' versionName='0.10.5'" signed/package.txt
           cat signed/package.txt
           jarsigner -keystore "$KEYSTORE" -storetype PKCS12 -storepass:env TAFL_KEYSTORE_PASSWORD -keypass:env TAFL_KEYSTORE_PASSWORD -signedjar "$AAB" android/app/build/outputs/bundle/release/app-release.aab tafl
           jarsigner -verify "$AAB"
@@ -100,7 +100,7 @@ jobs:
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
-          name: TAFL-0.10.4-android
+          name: TAFL-0.10.5-android
           path: |
             android/app/build/outputs/apk/debug/*.apk
             android/app/build/outputs/apk/release/*.apk
