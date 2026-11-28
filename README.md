@@ -111,3 +111,7 @@ Stronger Medium/Hard and new Impossible level. Exact king-exit fork proof supple
 ## 0.10.0
 
 Adds Historical Hnefatafl (11×11, throne), Ard Rí (7×7, throneless), Tawlbwrdd (11×11 Lewis Cross, throneless), Magpie (7×7 slow king), Berserk (11×11 commanders, knight, optional capture chains). Rules based on https://aagenielsen.dk/tafl_rules.php and https://abstractplay.com/wiki/doku.php?id=games:tafl. For historical and Berserk profiles third repetition is a white loss as digital approximation of perpetual repetition. Old variant IDs and signing unchanged. Berserk full turns are paths, stored as one history entry; draft sequences survive save/resume. Sea Battle deferred.
+
+## 0.10.1
+
+Royal visual system: monochrome pieces with custom SVG crown, sword and axe, double-diamond throne, rotated geometric corner ornaments, parallel perimeter markings, lighter graphite goal/restricted cells (#85867c). Shared symbols across previews, gameplay, animations and guides. No game rule or save schema changes.

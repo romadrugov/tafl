@@ -49,6 +49,14 @@ await page.reload();await page.locator('.slide').first().locator('.continueLocal
 for(const k of ['brandubh','tablut','hnefatafl','copenhagen','historical','ardri','tawlbwrdd','magpie','berserk']){await page.evaluate(k=>{mode=k;opponent='local';start()},k);await localPlay();await localPlay();assert.equal(await page.evaluate(()=>hist.at(-1).log.length),2);const rect=await page.locator('#board').boundingBox();assert(Math.abs(rect.width-rect.height)<2);assert(rect.y>=0&&rect.y+rect.height<=790);}
 await page.setViewportSize({width:360,height:640});const fit=await page.evaluate(()=>{const a=$('localBlack').getBoundingClientRect(),b=$('board').getBoundingClientRect(),c=$('localWhite').getBoundingClientRect();return a.top>=-1&&a.bottom<=b.top&&b.bottom<=c.top&&c.bottom<=innerHeight+1});assert(fit);
 console.log('Local two-player mode, nine variants, separate autosaves, single-turn history and compact layout OK');
+for(const k of ['brandubh','tablut','hnefatafl','copenhagen','historical','ardri','tawlbwrdd','magpie','berserk']){
+ await page.evaluate(k=>{mode=k;opponent='local';start()},k);
+ const actual=await page.evaluate(()=>({goals:document.querySelectorAll('#board .goal .squareIcon').length,expected:Array.from({length:e.L},(_,i)=>i).filter(e.goal).length,throne:document.querySelectorAll('#board .throneMark').length,hasThrone:e.restricted(e.T),king:document.querySelectorAll('#board .king .pieceIcon').length,officers:document.querySelectorAll('#board .commander .pieceIcon,#board .knight .pieceIcon').length,color:getComputedStyle(document.querySelector('#board .goal')).backgroundColor}));
+ assert.equal(actual.goals,actual.expected);assert.equal(actual.throne,Number(actual.hasThrone));assert.equal(actual.king,1);assert.equal(actual.officers,k==='berserk'?5:0);assert.equal(actual.color,'rgb(133, 134, 124)');
+ await page.screenshot({path:'previews/royal-'+k+'.png'});
+}
+console.log('Royal board SVG symbols and graphite special squares verified in all nine variants');
+
 await page.setViewportSize({width:390,height:790});
 await page.evaluate(()=>{clockChoice=0;mode='berserk';opponent='local';start();const b=Array(e.L).fill(0);b[23]=5;b[24]=1;b[26]=1;b[60]=3;b[108]=1;hist=[{...e.start(),b,turn:2,keys:[b.join('')+'2']}];future=[];render()});
 await page.locator('#board .sq').nth(23).click();await page.locator('#board .sq').nth(25).click();

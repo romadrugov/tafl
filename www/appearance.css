@@ -230,3 +230,27 @@ main.localGame.resultGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top
 
 /* Berserk officers and the optional end-of-chain action */
 .piece.commander,.piece.knight{display:grid;place-items:center;font-weight:800;font-size:clamp(9px,2.8vw,15px);line-height:1}.piece.commander{color:#f5cf79}.piece.knight{color:#79501f}.preview .piece.commander,.preview .piece.knight{font-size:clamp(7px,2vw,12px)}#finishChain{grid-column:1/-1;min-height:40px;padding:7px 12px;font-size:14px}#finishChain[hidden]{display:none!important}
+
+/* Royal board identity: monochrome tokens, engraved geometric escape markers.
+   Explicit stacking keeps perimeter markings visible behind occupied squares. */
+:root{--special-square:#85867c;--special-ink:#f2eee4;--royal-black:#292b2b;--royal-white:#f5f3ec}
+.sq,.miniCell{position:relative;isolation:isolate}
+.sq.restricted,.sq.goal,.miniCell.restricted,.miniCell.goal{background:var(--special-square);box-shadow:none;color:var(--special-ink)}
+.squareIcon{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;color:var(--special-ink);opacity:.95}
+.squareIcon.throneMark{inset:8%;width:84%;height:84%}
+.squareIcon.cornerMark,.squareIcon.edgeMark{stroke-width:1.8}
+.sq .piece,.miniCell .piece{position:relative;z-index:1;display:grid;place-items:center;line-height:1}
+.sq .piece.black,.miniCell .piece.black{background:var(--royal-black);border-color:#151515;color:var(--royal-white)}
+.sq .piece.white,.miniCell .piece.white,.sq .piece.king,.miniCell .piece.king{background:var(--royal-white);border-color:#b8b6ad;color:var(--royal-black)}
+.pieceIcon{display:block;width:72%;height:72%;pointer-events:none;overflow:visible}
+.piece.commander .pieceIcon,.piece.knight .pieceIcon{width:76%;height:76%}
+#kingCount{display:inline-grid;place-items:center;color:var(--text);width:22px;height:22px;vertical-align:middle}
+#kingCount[hidden]{display:none!important}
+#kingCount .pieceIcon{width:100%;height:100%}
+.sq .dot{position:relative;z-index:2;background:#267749;box-shadow:0 0 0 1px #f5f3ec70}
+.sq.last:not(.restricted):not(.goal){background:#aeb6a0}
+.sq.last:is(.restricted,.goal){background:var(--special-square);box-shadow:inset 0 0 0 2px #c0d0ad}
+.sq.sel{background:#b6c4a5;box-shadow:inset 0 0 0 2px #435d4d}
+.sq.sel:is(.restricted,.goal){background:var(--special-square);box-shadow:inset 0 0 0 3px #c1e0b0}
+.sq.cap{box-shadow:inset 0 0 0 2px var(--danger)}
+.sq .capturedGhost{position:absolute;z-index:4}
