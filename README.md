@@ -123,3 +123,7 @@ Remove graphite backgrounds from all special squares. Preserve normal alternatin
 ## 0.10.3
 
 Board-first match layout: compact AI row above and human row below the board, independent of side; monochrome color indicator, name/difficulty, small count and optional inline clock. Local face-to-face retains orientation and turn feedback, with compact clocks beside names and piece counts. No changes to rules, AI, save schema or signing.
+
+## 0.10.4
+
+Center the board vertically in AI matches using equal flexible regions above and below it, with player rows adjacent to the board, a fixed compact header and grouped controls. Compact portrait and two-column landscape layouts, stable selection and inline Berserk end-turn action. Local face-to-face orientation preserved. No game engine or save changes.

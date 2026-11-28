@@ -266,4 +266,20 @@ for(const theme of ['light','dark']){
 await page.evaluate(()=>{clockChoice=5;mode='tablut';opponent='local';start();stop();render()});
 assert.equal(await page.locator('#blackLocalCount').textContent(),'16/16');assert.equal(await page.locator('#whiteLocalCount').textContent(),'8/8');assert(await page.locator('#aiTop').isHidden());
 console.log('Compact match rows: light/dark, 320/360/390px, all board sizes, both colors, timer pills, local counts OK');
+// Balanced board layout, safe areas, stable position during selection.
+for(const [width,height,topInset,bottomInset] of [[393,877,44,24],[390,844,24,24],[320,600,24,24],[360,640,24,24],[844,390,0,0]]){
+ await page.setViewportSize({width,height});
+ for(const variant of ['brandubh','tablut','berserk']){
+  for(const theme of ['light','dark']){
+   await page.evaluate(({variant,theme,topInset,bottomInset})=>{document.documentElement.dataset.theme=theme;document.documentElement.style.setProperty('--tafl-top',topInset+'px');document.documentElement.style.setProperty('--tafl-bottom',bottomInset+'px');document.body.style.paddingTop=topInset+'px';document.body.style.paddingBottom=bottomInset+'px';mode=variant;opponent='ai';human=1;clockChoice=5;level=0;start();stop();render()},{variant,theme,topInset,bottomInset});
+   const rect=await page.evaluate(()=>{const b=$('board').getBoundingClientRect(),t=$('aiTop').getBoundingClientRect(),p=$('aiBottom').getBoundingClientRect(),a=$('gameActions').getBoundingClientRect();return {center:(b.top+b.bottom)/2,top:b.top,width:b.width,fit:t.bottom<=b.top&&p.top>=b.bottom&&a.bottom<=innerHeight+1,horizontal:document.documentElement.scrollWidth<=innerWidth+1}});
+   assert(rect.fit&&rect.horizontal,JSON.stringify(rect));assert(Math.abs(rect.center-(height+topInset-bottomInset)/2)<22,JSON.stringify(rect));
+   await page.evaluate(()=>{sel=e.moves(hist.at(-1).b,human)[0][0];render()});
+   const selected=await page.locator('#board').boundingBox();assert(Math.abs(selected.y-rect.top)<1&&Math.abs(selected.width-rect.width)<1);
+   await page.screenshot({path:'previews/centered-'+width+'-'+height+'-'+variant+'-'+theme+'.png'});
+  }
+ }
+}
+await page.evaluate(()=>{document.documentElement.style.removeProperty('--tafl-top');document.documentElement.style.removeProperty('--tafl-bottom');document.body.style.paddingTop='';document.body.style.paddingBottom='';});
+console.log('Centered board, safe-area insets, compact screens, landscape and stable selection verified');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}

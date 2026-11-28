@@ -290,3 +290,44 @@ main.localGame .seatInner::after{display:none}
  main.localGame .seatInner,main.localGame.timedGame .seatInner{grid-template-columns:1fr;justify-items:center;width:100%;padding:4px}
  .localSeat .seatText{text-align:center;width:100%}.localSeat .localPlayerLine,.localSeat .localPlayerDetail{justify-content:center;flex-wrap:wrap}
 }
+
+/* 0.10.4: balanced board-first screen; the board is centered between two
+   flexible equal-height zones. The header stays at the top, while player
+   information stays adjacent to the board. No fixed pixel translation. */
+main.inGame:not(.localGame){--match-height:calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px));min-height:var(--match-height);height:var(--match-height);padding-top:12px;padding-bottom:12px}
+main.inGame:not(.localGame) #game{display:grid;grid-template-rows:minmax(min-content,1fr) auto minmax(min-content,1fr);row-gap:6px;min-height:0}
+#matchUpper,#matchLower{display:flex;flex-direction:column;min-width:0;min-height:0;gap:8px}
+#matchUpper{justify-content:space-between}
+#matchLower{justify-content:flex-start}
+main.localGame #matchUpper,main.localGame #matchLower{display:contents}
+main.inGame:not(.localGame) #game{--match-board-width:min(100%,max(210px,calc(var(--match-height) - 280px)))}
+main.inGame:not(.localGame).resultGame #game{--match-board-width:min(100%,max(190px,calc(var(--match-height) - 382px)))}
+main.inGame:not(.localGame) .boardWrap,main.inGame:not(.localGame).resultGame .boardWrap,main.inGame:not(.localGame) .aiSeat,main.inGame:not(.localGame).resultGame .aiSeat{width:var(--match-board-width);margin-left:auto;margin-right:auto}
+main.inGame:not(.localGame) .aiTop,main.inGame:not(.localGame) .aiBottom{margin-top:0;margin-bottom:0}
+main.inGame:not(.localGame) #gameActions{margin:0 auto;gap:5px;width:var(--match-board-width)}
+main.inGame:not(.localGame) #gameActions .status{font-size:clamp(19px,5.5vw,23px);line-height:1.2}
+main.inGame:not(.localGame) #gameActions .statusSub{font-size:12px;line-height:1.25;margin-top:2px}
+main.inGame:not(.localGame) #moveControls{gap:8px}
+/* Keep the bottom controls stable even when the selection hint appears. */
+main.inGame:not(.localGame) #gameActions .statusSub:empty{display:block;visibility:hidden;min-height:15px}
+main.inGame:not(.localGame) #gameActions{width:100%;max-width:460px}
+#gameActions:has(#finishChain:not([hidden])) #moveControls{grid-column:1;grid-row:1;grid-template-columns:repeat(2,44px);gap:6px}
+#gameActions:has(#finishChain:not([hidden])) #moveControls .historyIcon{width:44px;min-width:44px}
+#gameActions:has(#finishChain:not([hidden])) #finishChain{grid-column:2;grid-row:1;padding:5px 8px;min-height:46px}
+@media(max-height:700px) and (orientation:portrait){
+ main.inGame:not(.localGame) #game{--match-board-width:min(100%,max(210px,calc(var(--match-height) - 300px)))}
+ main.inGame:not(.localGame).resultGame #game{--match-board-width:min(100%,max(160px,calc(var(--match-height) - 410px)))}
+ main.inGame:not(.localGame).resultGame #gameActions{gap:4px}
+ main.inGame:not(.localGame).resultGame #gameActions .status{font-size:18px}
+}
+@media(max-height:550px) and (orientation:landscape) and (min-width:500px){
+ main.inGame:not(.localGame){max-width:100%;padding:6px 12px}
+ main.inGame:not(.localGame) #game{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:40px minmax(0,1fr) 40px;gap:4px 18px;--match-board-width:min(100%,max(140px,calc(var(--match-height) - 152px)))}
+ main.inGame:not(.localGame).resultGame #game{--match-board-width:min(100%,max(140px,calc(var(--match-height) - 152px)))}
+ main.inGame:not(.localGame) #matchUpper,main.inGame:not(.localGame) #matchLower{display:contents}
+ main.inGame:not(.localGame) .gameTop{grid-column:2;grid-row:1}
+ main.inGame:not(.localGame) .aiTop{grid-column:1;grid-row:1;align-self:center}
+ main.inGame:not(.localGame) .boardWrap{grid-column:1;grid-row:2;align-self:center}
+ main.inGame:not(.localGame) .aiBottom{grid-column:1;grid-row:3;align-self:center}
+ main.inGame:not(.localGame) #gameActions{grid-column:2;grid-row:2/4;align-self:center}
+}
