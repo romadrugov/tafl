@@ -139,3 +139,7 @@ Improve dark-theme black player token contrast, show current turn with a subtle 
 ## 0.10.6
 
 Padded active player highlight; result title and reason above the board in AI games. Timed games still disallow history navigation during an ordinary live match, but allow undo/redo after the result, restore per-position clocks and permit a new branch. Timeout is reversible; old saves lacking historical clock checkpoints use the saved remaining time as fallback. Result statistics follow undo/redo. No engine changes.
+
+## 0.11.0
+
+Unified interactive tutorial: first optional gallery card, 25 engine-validated exercises, three languages, saved progress and completion, replay, manual hide and settings restore. Training uses separate state and never touches match saves or statistics. Removed redundant gallery descriptions and setup/settings explanatory captions. Existing per-variant rules remain available.

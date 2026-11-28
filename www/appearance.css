@@ -410,3 +410,29 @@ main.inGame:not(.localGame).resultGame #game{--match-board-width:min(100%,max(19
  main.inGame:not(.localGame) #matchResult{grid-column:2;grid-row:2;align-self:start}
  main.inGame:not(.localGame).resultGame #gameActions{grid-row:2/4;align-self:end}
 }
+
+/* Tutorial: the same board and pieces as a regular match, with a single task. */
+.tutorialCard .slideHead{align-items:center;flex-wrap:wrap}
+.tutorialLearned{font-size:12px;font-weight:700;color:var(--win);white-space:nowrap}
+.tutorialCard .tutorialHide{background:transparent;border-color:transparent;color:var(--muted);font-size:13px;min-height:40px;font-weight:500}
+#tutorialPage[hidden]{display:none!important}
+#tutorialPage{position:fixed;inset:0;z-index:45;background:var(--bg);color:var(--text);display:flex;flex-direction:column;padding:var(--tafl-top,0px) var(--tafl-right,0px) var(--tafl-bottom,0px) var(--tafl-left,0px);overflow:auto}
+#tutorialPage .guideHead{flex-shrink:0;background:var(--panel);border-color:var(--line);grid-template-columns:44px 1fr 64px}
+#tutorialPage .guideHead::after{display:none}
+#tutorialCounter{font-size:12px;font-variant-numeric:tabular-nums;text-align:right;color:var(--muted)}
+.tutorialProgress{height:3px;background:var(--line);flex-shrink:0}
+#tutorialProgressBar{height:100%;background:var(--gold);transition:width .2s}
+.tutorialContent{flex:1;width:min(100%,540px);margin:auto;padding:16px;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:12px;min-height:min-content}
+.tutorialIntro small{font-size:12px;color:var(--muted)}
+.tutorialIntro h3{font-size:22px;line-height:1.15;margin:4px 0 6px}
+.tutorialIntro p{font-size:14px;line-height:1.4;margin:0;color:var(--text)}
+#tutorialBoard{width:min(100%,max(180px,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 285px)));margin:0 auto;flex-shrink:0;align-self:center}
+#tutorialBoard .sq{min-width:0;min-height:0}
+.tutorialTarget{outline:2px solid #47774c!important;outline-offset:-3px;background:#b6c4a5!important}
+#tutorialFeedback{min-height:34px;font-size:14px;line-height:1.35;text-align:center;color:var(--muted);display:grid;place-items:center}
+#tutorialFeedback.correct{font-weight:700;color:var(--win)}
+.tutorialActions{display:flex;gap:8px;align-items:center;justify-content:flex-end}
+.tutorialActions button{min-height:44px}
+#tutorialNext{flex:1;min-width:0}
+#tutorialHint[hidden]{display:none}
+@media(orientation:landscape) and (max-height:550px){.tutorialContent{display:grid;grid-template-columns:minmax(140px,1fr) minmax(0,1fr);grid-template-rows:1fr auto auto;width:100%;max-width:760px;gap:8px 16px;padding:8px 16px}.tutorialIntro{grid-column:2;grid-row:1;align-self:end}#tutorialBoard{grid-column:1;grid-row:1/4;width:min(100%,max(140px,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 95px)))}#tutorialFeedback{grid-column:2;grid-row:2}.tutorialActions{grid-column:2;grid-row:3}}

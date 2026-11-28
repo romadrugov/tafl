@@ -1,17 +1,17 @@
 import { chromium } from 'playwright';
 import {createServer} from 'node:http';import {readFile,mkdir} from 'node:fs/promises';import {resolve,extname} from 'node:path';import assert from 'node:assert/strict';
 const root=resolve('www');const server=createServer(async(req,res)=>{try{const p=resolve(root,'.'+(req.url==='/'?'/index.html':req.url.split('?')[0]));if(!p.startsWith(root+'/'))throw Error('path');res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.png':'image/png'})[extname(p)]||'application/octet-stream');res.end(await readFile(p))}catch{res.writeHead(404);res.end()}});await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;
-try{browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox']});const page=await browser.newPage({viewport:{width:390,height:790},deviceScaleFactor:1,isMobile:true,hasTouch:true,reducedMotion:'reduce'});const chooseSetting=async(id,value)=>{await page.locator('#'+id+'Picker').click();await page.locator('#pickerOptions button[data-value="'+value+'"]').click()};let errs=[];page.on('pageerror',e=>errs.push(String(e)));await page.goto('http://127.0.0.1:'+server.address().port);await page.locator('.slide').first().waitFor();await mkdir('www/shots',{recursive:true});await mkdir('previews',{recursive:true});await page.screenshot({path:'www/shots/gallery.png'});await page.locator('.slide').first().locator('.newChoice').click();await page.locator('#setupStage').waitFor();await page.locator('#opponents [data-value="ai"]').click();await page.screenshot({path:'www/shots/setup.png'});await page.locator('#howToPlay').click();await page.locator('#guidePage').waitFor();assert.equal(await page.locator('.guideCard').count(),5);await page.locator('#guideBack').click();await page.locator('#sides [data-value="1"]').click();await page.locator('#play').click();await page.locator('#board .sq').first().waitFor();await page.screenshot({path:'www/shots/game.png'});// Exercise exact replay, multiple undo/redo, persistence, and branch invalidation.
+try{browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||undefined,args:['--no-sandbox']});const page=await browser.newPage({viewport:{width:390,height:790},deviceScaleFactor:1,isMobile:true,hasTouch:true,reducedMotion:'reduce'});const chooseSetting=async(id,value)=>{await page.locator('#'+id+'Picker').click();await page.locator('#pickerOptions button[data-value="'+value+'"]').click()};let errs=[];page.on('pageerror',e=>errs.push(String(e)));await page.goto('http://127.0.0.1:'+server.address().port);await page.locator('.slide').first().waitFor();await mkdir('www/shots',{recursive:true});await mkdir('previews',{recursive:true});await page.screenshot({path:'www/shots/gallery.png'});await page.locator('.slide[data-variant="brandubh"]').locator('.newChoice').click();await page.locator('#setupStage').waitFor();await page.locator('#opponents [data-value="ai"]').click();await page.screenshot({path:'www/shots/setup.png'});await page.locator('#howToPlay').click();await page.locator('#guidePage').waitFor();assert.equal(await page.locator('.guideCard').count(),5);await page.locator('#guideBack').click();await page.locator('#sides [data-value="1"]').click();await page.locator('#play').click();await page.locator('#board .sq').first().waitFor();await page.screenshot({path:'www/shots/game.png'});// Exercise exact replay, multiple undo/redo, persistence, and branch invalidation.
 await page.evaluate(()=>{level=0;start()});
 const snap=()=>page.evaluate(()=>JSON.stringify(hist[hist.length-1]));
 const play=async()=>{const m=await page.evaluate(()=>e.moves(hist.at(-1).b,human)[0]);await page.locator('#board .sq').nth(m[0]).click();await page.locator('#board .sq').nth(m[1]).click();await page.waitForFunction(()=>!busy);};
 const initial=await snap();await play();const one=await snap();await play();const two=await snap();
 assert.notEqual(one,two);await page.locator('#undo').click();assert.equal(await snap(),one);await page.locator('#undo').click();assert.equal(await snap(),initial);
 await page.locator('#redo').click();assert.equal(await snap(),one);await page.locator('#redo').click();assert.equal(await snap(),two);assert.equal(await page.locator('#redo').isDisabled(),true);
-await page.locator('#undo').click();await page.reload();await page.locator('.slide').first().locator('.continueChoice').click();await page.locator('#board .sq').first().waitFor();assert.equal(await snap(),one);await page.locator('#redo').click();assert.equal(await snap(),two);
+await page.locator('#undo').click();await page.reload();await page.locator('.slide[data-variant="brandubh"]').locator('.continueChoice').click();await page.locator('#board .sq').first().waitFor();assert.equal(await snap(),one);await page.locator('#redo').click();assert.equal(await snap(),two);
 await page.locator('#undo').click();await play();assert.equal(await page.locator('#redo').isDisabled(),true);
 console.log('Multi-round redo, exact snapshots, reload and branch invalidation OK');
-await page.locator('#menuBtn').click();await page.locator('#actionButtons button').filter({hasText:/^Rules$/}).click();await page.locator('#guidePage').waitFor();await page.locator('#guideBack').click();await page.reload();await page.locator('#settingsBtn').click();assert.deepEqual(await page.locator('#settingsModal .settingsLine label').evaluateAll(xs=>xs.map(x=>x.htmlFor)),['languagePicker','themeSelectPicker','soundEnabled','animationEnabled']);await page.locator('#aboutBtn').click();assert.equal(await page.locator('#guideClose').count(),0);await page.locator('#guidePage').waitFor();assert.equal(await page.locator('.guideVariant').count(),9);await page.screenshot({path:'previews/about.png'});for(let i=0;i<9;i++){await page.locator('.guideVariant').nth(i).click();assert.equal(await page.locator('.guideCard').count(),i===3?7:i===8?6:5);if(i===0)await page.screenshot({path:'previews/rules.png'});await page.locator('#guideBack').click()}await page.locator('#guideBack').click();for(const locale of ['es','ru','en']){await chooseSetting('language',locale);await page.locator('#aboutBtn').click();assert.ok((await page.locator('#guideTitle').textContent()).length);await page.locator('#guideBack').click()}
+await page.locator('#menuBtn').click();await page.locator('#actionButtons button').filter({hasText:/^Rules$/}).click();await page.locator('#guidePage').waitFor();await page.locator('#guideBack').click();await page.reload();await page.locator('#settingsBtn').click();assert.deepEqual(await page.locator('#settingsModal .settingsLine label').evaluateAll(xs=>xs.map(x=>x.htmlFor)),['languagePicker','themeSelectPicker','soundEnabled','animationEnabled','tutorialVisible']);await page.locator('#aboutBtn').click();assert.equal(await page.locator('#guideClose').count(),0);await page.locator('#guidePage').waitFor();assert.equal(await page.locator('.guideVariant').count(),9);await page.screenshot({path:'previews/about.png'});for(let i=0;i<9;i++){await page.locator('.guideVariant').nth(i).click();assert.equal(await page.locator('.guideCard').count(),i===3?7:i===8?6:5);if(i===0)await page.screenshot({path:'previews/rules.png'});await page.locator('#guideBack').click()}await page.locator('#guideBack').click();for(const locale of ['es','ru','en']){await chooseSetting('language',locale);await page.locator('#aboutBtn').click();assert.ok((await page.locator('#guideTitle').textContent()).length);await page.locator('#guideBack').click()}
 // Appearance preferences: explicit, live system changes, reload persistence and guide colors.
 await chooseSetting('themeSelect','light');assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
 await page.screenshot({path:'previews/light-settings.png'});
@@ -31,7 +31,7 @@ await page.evaluate(async()=>{const before=hist[0],after=hist[1];await animateBo
 console.log('Themes, live system theme, persistence, capture animation, movement and reduced motion checks OK');
 
 // Local shared-table play: explicit selection, no AI, alternating turns, separate saves.
-await page.reload();await page.locator('.slide').first().locator('.newChoice').click();
+await page.reload();await page.locator('.slide[data-variant="brandubh"]').locator('.newChoice').click();
 assert.equal(await page.locator('#setupActions').isVisible(),true);assert.equal(await page.locator('#play').isDisabled(),true);assert((await page.locator('#opponentPanel').boundingBox()).height<110);await page.screenshot({path:'previews/opponent-select.png'});
 await page.locator('#opponents [data-value="local"]').click();assert.equal(await page.locator('#sidePanel').isHidden(),true);assert.equal(await page.locator('#levelPanel').isHidden(),true);assert.equal(await page.locator('#playersPanel').isVisible(),true);assert.equal(await page.locator('#playerName0').textContent(),'Player 1');assert.equal(await page.locator('#playerName1').textContent(),'Player 2');await page.locator('#editPlayer0').click();await page.locator('#nameInput').fill('Alice');await page.locator('#nameForm button[type=submit]').click();await page.locator('#editPlayer1').click();await page.locator('#nameInput').fill('Bob');await page.locator('#nameForm button[type=submit]').click();await page.locator('#colorPlayer0').click();assert.deepEqual(await page.evaluate(()=>players.map(p=>p.side)),[1,2]);await page.locator('#colorPlayer1').click();assert.deepEqual(await page.evaluate(()=>players.map(p=>p.side)),[2,1]);await page.locator('#colorPlayer0').click();await page.screenshot({path:'previews/local-setup.png'});await page.setViewportSize({width:360,height:640});const sticky=async()=>{const a=await page.locator('#setupActions').boundingBox();assert(a.y>=0&&a.y+a.height<=640);assert(await page.locator('#howToPlay').isVisible());assert(await page.locator('#play').isVisible())};await sticky();await page.locator('#opponents [data-value="ai"]').click();await sticky();await page.evaluate(()=>{$('setupScroll').scrollTop=$('setupScroll').scrollHeight});await sticky();await page.screenshot({path:'previews/compact-setup.png'});await page.locator('#opponents [data-value="local"]').click();await sticky();await page.setViewportSize({width:390,height:790});
 await page.locator('#play').click();await page.locator('#localBlack').waitFor();assert.equal(await page.locator('#blackPlayerName').textContent(),'Alice');assert.equal(await page.locator('#whitePlayerName').textContent(),'Bob');
@@ -44,8 +44,8 @@ const localInitial=await snap();await localPlay();const localOne=await snap();as
 await localPlay();const localTwo=await snap();assert.equal(await page.evaluate(()=>hist.at(-1).log.length),2);
 await page.locator('#undo').click();assert.equal(await snap(),localOne);assert.equal(await page.locator('#redo').isVisible(),true);await page.screenshot({path:'previews/local-toolbar.png'});await page.locator('#undo').click();assert.equal(await snap(),localInitial);await page.locator('#redo').click();assert.equal(await snap(),localOne);await page.locator('#redo').click();assert.equal(await snap(),localTwo);assert.equal(await page.locator('#redo').isVisible(),true);assert.equal(await page.locator('#redo').isDisabled(),true);
 await page.locator('#menuBtn').click();assert.equal(await page.locator('#actionModal').isVisible(),true);assert.equal(await page.locator('#actionButtons button').filter({hasText:/Undo|Redo/}).count(),0);await page.locator('#actionButtons button').filter({hasText:/^Save and exit$/}).click();
-assert.equal(await page.locator('.slide').first().locator('.continueChoice').isVisible(),true);assert.equal(await page.locator('.slide').first().locator('.continueLocalChoice').isVisible(),true);
-await page.reload();await page.locator('.slide').first().locator('.continueLocalChoice').click();assert.equal(await snap(),localTwo);assert.equal(await page.evaluate(()=>opponent), 'local');assert.equal(await page.locator('#blackPlayerName').textContent(),'Alice');assert.equal(await page.locator('#whitePlayerName').textContent(),'Bob');assert.deepEqual(await page.evaluate(()=>players.map(p=>p.side)),[1,2]);
+assert.equal(await page.locator('.slide[data-variant="brandubh"]').locator('.continueChoice').isVisible(),true);assert.equal(await page.locator('.slide[data-variant="brandubh"]').locator('.continueLocalChoice').isVisible(),true);
+await page.reload();await page.locator('.slide[data-variant="brandubh"]').locator('.continueLocalChoice').click();assert.equal(await snap(),localTwo);assert.equal(await page.evaluate(()=>opponent), 'local');assert.equal(await page.locator('#blackPlayerName').textContent(),'Alice');assert.equal(await page.locator('#whitePlayerName').textContent(),'Bob');assert.deepEqual(await page.evaluate(()=>players.map(p=>p.side)),[1,2]);
 for(const k of ['brandubh','tablut','hnefatafl','copenhagen','historical','ardri','tawlbwrdd','magpie','berserk']){await page.evaluate(k=>{mode=k;opponent='local';start()},k);await localPlay();await localPlay();assert.equal(await page.evaluate(()=>hist.at(-1).log.length),2);const rect=await page.locator('#board').boundingBox();assert(Math.abs(rect.width-rect.height)<2);assert(rect.y>=0&&rect.y+rect.height<=790);}
 await page.setViewportSize({width:360,height:640});const fit=await page.evaluate(()=>{const a=$('localBlack').getBoundingClientRect(),b=$('board').getBoundingClientRect(),c=$('localWhite').getBoundingClientRect();return a.top>=-1&&a.bottom<=b.top&&b.bottom<=c.top&&c.bottom<=innerHeight+1});assert(fit);
 console.log('Local two-player mode, nine variants, separate autosaves, single-turn history and compact layout OK');
@@ -85,7 +85,7 @@ console.log('Statistics filters, separate local record, undo/redo idempotency an
 // Chess clocks: default off, equal independent budgets, switching, no
 // reset by selection, no animation charge, timeout, saved remaining time.
 await page.setViewportSize({width:390,height:790});
-await page.locator('.slide').first().locator('.newChoice').click();
+await page.locator('.slide[data-variant="brandubh"]').locator('.newChoice').click();
 assert.equal(await page.locator('#clockPanel').isHidden(),true);assert.equal(await page.locator('#clockChoices [data-value="0"]').getAttribute('aria-pressed'),'true');
 await page.locator('#opponents [data-value="local"]').click();
 assert.equal(await page.locator('#clockPanel').isVisible(),true);await page.locator('#clockChoices [data-value="5"]').click();await page.screenshot({path:'previews/clock-setup.png'});
@@ -101,7 +101,7 @@ const afterWhite=await page.evaluate(()=>clockSnapshot().remaining);assert(after
 await page.screenshot({path:'previews/local-clock.png'});
 await page.locator('#menuBtn').click();await page.locator('#actionButtons button').filter({hasText:/^Save and exit$/}).click();
 const savedClock=await page.evaluate(()=>readSave('brandubh','local').clock);assert.equal(savedClock.limit,5);
-await page.reload();await page.locator('.slide').first().locator('.continueLocalChoice').click();
+await page.reload();await page.locator('.slide[data-variant="brandubh"]').locator('.continueLocalChoice').click();
 const restored=await page.evaluate(()=>clockSnapshot().remaining);assert.equal(restored[2],savedClock.remaining[2]);assert(restored[1]<=savedClock.remaining[1]&&restored[1]>savedClock.remaining[1]-2000);
 await page.evaluate(()=>{clockStarted-=400000;clockCheck()});
 assert.equal(await page.evaluate(()=>hist.at(-1).win),2);assert.equal(await page.evaluate(()=>hist.at(-1).why),'Время вышло');assert.equal(await page.locator('#blackLocalClock').textContent(),'0:00');assert.equal(await page.evaluate(()=>clockSide),0);
@@ -324,4 +324,36 @@ await page.locator('#undo').click();assert.equal(await page.evaluate(()=>hist.at
 assert.equal(await page.evaluate(()=>readResults().filter(x=>x.id===gameId).length),0);
 await page.locator('#redo').click();assert.equal(await page.evaluate(()=>hist.at(-1).win),2);assert.equal(await page.evaluate(()=>clockLeft(2)),240000);assert.equal(await page.evaluate(()=>readResults().filter(x=>x.id===gameId).length),1);
 console.log('Timed result rollback, timeout rollback, redo, clock restoration and top result placement OK');
+// Complete the course through the actual UI, verify persistence and isolation.
+await page.setViewportSize({width:390,height:844});
+await page.evaluate(()=>{menu();lang='ru';applyLanguage();setTutorialVisible(true)});
+assert.equal(await page.locator('#variants .slide').first().getAttribute('data-variant'),'tutorial');
+const prior=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([k])=>k.startsWith('tafl.saved.')||k==='tafl.results.v1')));
+await page.locator('.tutorialStart').click();
+assert(await page.locator('#tutorialPage').isVisible());
+await page.locator('#tutorialBoard [data-cell="15"]').click(); // select B5
+await page.locator('#tutorialBoard [data-cell="18"]').click(); // E5
+assert(await page.locator('#tutorialNext').isEnabled());
+await page.locator('#tutorialNext').click();
+await page.evaluate(()=>window.taflBack());
+assert(await page.locator('#tutorialPage').isHidden());
+await page.reload();await page.locator('.tutorialStart').click();
+assert.equal(await page.locator('#tutorialCounter').textContent(),'2 / 25');
+for(let j=1;j<25;j++){
+ const l=await page.evaluate(()=>{const s=tutorialSession,l=tutorialLessons()[s.index];return {path:l.path,quiz:l.quiz,index:s.index}});
+ if(l.quiz)assert(await page.locator('#tutorialHint').isVisible());
+ for(const i of l.path)await page.locator('#tutorialBoard [data-cell="'+i+'"]').click();
+ assert(await page.locator('#tutorialNext').isEnabled(),'lesson '+l.index);
+ if(j===17)await page.screenshot({path:'previews/tutorial-chain.png'});
+ await page.locator('#tutorialNext').click();
+}
+assert(await page.locator('#tutorialPage').isHidden());assert(await page.locator('.tutorialLearned').isVisible());
+assert.deepEqual(await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([k])=>k.startsWith('tafl.saved.')||k==='tafl.results.v1'))),prior);
+await page.locator('.tutorialHide').click();assert.equal(await page.locator('.tutorialCard').count(),0);
+await page.reload();assert.equal(await page.locator('.tutorialCard').count(),0);
+await page.locator('#settingsBtn').click();assert.equal(await page.locator('#tutorialVisible').isChecked(),false);
+await page.locator('#tutorialVisible').check();await page.locator('#closeSettings').click();assert(await page.locator('.tutorialLearned').isVisible());
+await page.locator('.tutorialStart').click();assert.equal(await page.locator('#tutorialCounter').textContent(),'1 / 25');await page.evaluate(()=>window.taflBack());
+assert(await page.locator('.tutorialLearned').isVisible());
+console.log('Tutorial: all 25 legal exercises, replay, progress, hidden preference and saved-game isolation OK');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}

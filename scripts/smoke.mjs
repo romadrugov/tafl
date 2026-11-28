@@ -55,3 +55,5 @@ for(const [mode,n] of [['historical',11],['ardri',7],['tawlbwrdd',11],['magpie',
 {
  const e=ctx.Engine('tawlbwrdd'),b=e.initial();assert.equal(b[4*11+5],2);assert.equal(b[2*11+5],2);assert.equal(b[1*11+5],1);assert.equal(b[1*11+4],1);assert.equal(b[1*11+6],1);assert.equal(b[4*11+4],0);
 }
+
+const lessonSrc=readFileSync('www/tutorial-data.js','utf8');vm.runInContext(lessonSrc+'\nthis.TutorialLessons=TutorialLessons;',ctx);const lessons=ctx.TutorialLessons(ctx.Engine);assert.equal(lessons.length,25);console.log('All tutorial positions and expected engine outcomes validated');
