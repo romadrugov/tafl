@@ -127,3 +127,7 @@ Board-first match layout: compact AI row above and human row below the board, in
 ## 0.10.4
 
 Center the board vertically in AI matches using equal flexible regions above and below it, with player rows adjacent to the board, a fixed compact header and grouped controls. Compact portrait and two-column landscape layouts, stable selection and inline Berserk end-turn action. Local face-to-face orientation preserved. No game engine or save changes.
+
+### Android test releases
+
+Successful Android builds from `main` automatically publish their signed APK and its SHA-256 checksum as a [GitHub pre-release](https://github.com/romadrugov/tafl/releases). Install the APK directly from Assets, without downloading an Actions ZIP. Each version's first release uses `v<version>`; subsequent successful builds of the same version receive a unique CI tag. Existing releases and tags are not overwritten. Unsigned/debug builds and AABs remain in Actions artifacts. Publishing requires all tests, signing and artifact uploads to succeed; the release job has scoped repository contents-write permission.

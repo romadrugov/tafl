@@ -9,6 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    outputs:
+      version: ${{ steps.signing.outputs.version }}
+      signed: ${{ steps.signing.outputs.signed }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -105,3 +108,57 @@ jobs:
             www/shots/*.png
             previews/*.png
           if-no-files-found: error
+
+  # Publish only packages produced by the successful, fully tested build above.
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main' && needs.build.outputs.signed == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    concurrency:
+      group: tafl-release-${{ needs.build.outputs.version }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: TAFL-${{ needs.build.outputs.version }}-signed
+          path: signed
+      - name: Publish signed APK as a GitHub pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.build.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          cd signed
+          sha256sum -c SHA256SUMS.txt
+          APK="TAFL-${VERSION}.apk"
+          test -s "$APK"
+          grep -F "name='com.taflclub'" package.txt
+          grep -F "versionName='${VERSION}'" package.txt
+          BUILD="$(sed -n "s/.*versionCode='\([0-9][0-9]*\)'.*/\1/p" package.txt)"
+          test -n "$BUILD"
+          sha256sum "$APK" > "$APK.sha256"
+
+          # Never replace an existing release or move its tag.
+          # Additional successful builds of the same version receive unique tags.
+          TAG="v${VERSION}"
+          if gh release view "$TAG" --json tagName >/dev/null 2>&1 || gh api "repos/$GH_REPO/git/ref/tags/$TAG" --silent >/dev/null 2>&1; then
+            TAG="v${VERSION}-ci.${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
+          fi
+          {
+            printf 'Signed Android test build.\n\n'
+            printf 'Version: %s · Build: %s\n\n' "$VERSION" "$BUILD"
+            printf 'Download the APK from Assets and install it over the previous version.\n\n'
+            printf 'All automated game, AI and UI tests passed before signing.\n\n'
+            printf 'Source commit: %s\n\n' "$GITHUB_SHA"
+            printf 'Build: %s/%s/actions/runs/%s\n' "$GITHUB_SERVER_URL" "$GH_REPO" "$GITHUB_RUN_ID"
+          } > release-notes.md
+          gh release create "$TAG" "$APK" "$APK.sha256" \
+            --target "$GITHUB_SHA" --title "TAFL $VERSION (Build $BUILD)" \
+            --prerelease --notes-file release-notes.md
+          printf '### Signed APK published\n\n[Download APK](%s/%s/releases/download/%s/%s)\n' "$GITHUB_SERVER_URL" "$GH_REPO" "$TAG" "$APK" >> "$GITHUB_STEP_SUMMARY"
