@@ -253,3 +253,40 @@ main.localGame.resultGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top
 .sq.sel,.sq.sel:is(.restricted,.goal){background:#b6c4a5;box-shadow:inset 0 0 0 2px #435d4d}
 .sq.cap{box-shadow:inset 0 0 0 2px var(--danger)}
 .sq .capturedGhost{position:absolute;z-index:4}
+
+/* 0.10.3: board-first match layout. Opponent above, human below; clocks
+   beside their names, never in empty full-width boxes. */
+.aiSeat{width:100%;flex:0 0 auto;padding:0 0 0 19px;min-width:0}
+.aiSeat[hidden],.playerMeta[hidden],.matchClock[hidden]{display:none!important}
+.aiSeat .playerCard{display:flex;align-items:center;gap:9px;width:fit-content;max-width:100%;min-height:38px;padding:2px 0;background:none;border:0;border-radius:0;box-shadow:none}
+.aiSeat .countToken{width:26px;height:26px;flex:0 0 26px;box-shadow:0 1px 2px #0003,inset 0 0 0 2px #8884}
+.aiSeat .countToken.black{background:var(--royal-black);border-color:#151515}
+.aiSeat .countToken.white{background:var(--royal-white);border-color:#b8b6ad}
+.aiSeat .playerInfo{display:flex;flex-direction:column;gap:2px;min-width:0;padding-left:9px;border-left:1px solid var(--line)}
+.aiSeat .playerLine{display:flex;align-items:center;gap:5px;min-width:0;line-height:1.2;flex-wrap:wrap}
+.aiSeat .playerIdentity,.aiSeat .playerMeta{font-size:14px;font-weight:650;color:var(--text);line-height:1.2;white-space:nowrap}
+.aiSeat .playerMeta:before{content:'·';margin-right:5px;color:var(--muted)}
+.aiSeat .playerCard .count{font-size:12px;line-height:1.15;color:var(--muted);font-weight:500;margin:0}
+.aiSeat .playerCard .aiClock,.localSeat .localClock{display:inline-flex;align-items:center;justify-content:center;min-width:42px;width:auto;min-height:20px;padding:2px 7px;margin:0 0 0 3px;border-radius:7px;font-size:12px;font-weight:750;white-space:nowrap;line-height:1.1}
+.aiSeat .playerCard.activePlayer .playerInfo{border-left-color:var(--gold);border-left-width:2px;padding-left:8px}
+.aiTop{margin-top:3px}.aiBottom{margin-bottom:3px}
+main.inGame:not(.localGame) #game{gap:6px}
+main.inGame:not(.localGame) .boardWrap{width:min(100%,max(230px,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 245px)));flex:0 0 auto}
+main.inGame:not(.localGame).resultGame .boardWrap{width:min(100%,max(230px,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 340px)))}
+main.inGame:not(.localGame) .aiSeat{width:min(100%,max(230px,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 245px)));margin-left:auto;margin-right:auto}
+main.inGame:not(.localGame).resultGame .aiSeat{width:min(100%,max(230px,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 340px)))}
+main.inGame:not(.localGame) #gameActions{margin-top:6px}
+main.localGame .aiSeat{display:none!important}
+main.localGame .seatInner,main.localGame.timedGame .seatInner{display:grid;grid-template-columns:26px minmax(0,1fr);gap:8px;width:fit-content;min-width:0;max-width:100%;padding:3px 9px;border-radius:9px}
+main.localGame .seatInner::after{display:none}
+.localSeat .seatText{text-align:left;min-width:0}
+.localSeat .localPlayerLine,.localSeat .localPlayerDetail{display:flex;align-items:center;gap:6px;min-width:0}
+.localSeat .localPlayerLine small{font-size:14px;font-weight:650;color:var(--text);max-width:100%;min-width:0}
+.localSeat .localPlayerDetail{color:var(--muted);font-size:12px;line-height:1.2;font-variant-numeric:tabular-nums}
+.localSeat .localPlayerDetail strong{font-size:12px;font-weight:650;margin:0;white-space:nowrap}
+.localSeat .localPlayerDetail strong:before{content:'·';margin-right:6px;color:var(--muted)}
+.localSeat .localClock{flex-shrink:0}
+@media(orientation:landscape) and (min-width:500px){
+ main.localGame .seatInner,main.localGame.timedGame .seatInner{grid-template-columns:1fr;justify-items:center;width:100%;padding:4px}
+ .localSeat .seatText{text-align:center;width:100%}.localSeat .localPlayerLine,.localSeat .localPlayerDetail{justify-content:center;flex-wrap:wrap}
+}

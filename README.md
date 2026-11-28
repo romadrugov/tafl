@@ -119,3 +119,7 @@ Royal visual system: monochrome pieces with custom SVG crown, sword and axe, dou
 ## 0.10.2
 
 Remove graphite backgrounds from all special squares. Preserve normal alternating wood colors and dark engraved double-diamond, corner and perimeter marks in gameplay, previews and rules. Temporary selection, last-move and capture highlights remain unchanged in purpose. No changes to rules, AI, storage or signing.
+
+## 0.10.3
+
+Board-first match layout: compact AI row above and human row below the board, independent of side; monochrome color indicator, name/difficulty, small count and optional inline clock. Local face-to-face retains orientation and turn feedback, with compact clocks beside names and piece counts. No changes to rules, AI, save schema or signing.

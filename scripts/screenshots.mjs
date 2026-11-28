@@ -224,14 +224,18 @@ for(const locale of ['en','es','ru']){
   assert(a&&b&&s&&Math.abs(a.y-b.y)<1&&s.y>=a.y+a.height);
   assert.equal(await page.locator('#redo').isDisabled(),true);
   const black=await page.locator('#blackCard').boundingBox(),white=await page.locator('#whiteCard').boundingBox(),bc=await page.locator('#bc').boundingBox(),wc=await page.locator('#wc').boundingBox();
-  assert(Math.abs(black.height-white.height)<1&&Math.abs(bc.y-wc.y)<1);
+  const board=await page.locator('#boardWrap').boundingBox(),top=humanSide===1?white:black,bottom=humanSide===1?black:white;
+  assert(Math.abs(black.height-white.height)<1&&top.y+top.height<=board.y+1&&bottom.y>=board.y+board.height-1);
+  assert(top.height<=44&&bottom.height<=44&&Math.abs(black.x-white.x)<1);
+  assert(await page.locator(humanSide===1?'#blackMeta':'#whiteMeta').isHidden());
+  assert(await page.locator('#blackAiClock').isHidden());assert(await page.locator('#whiteAiClock').isHidden());
   await page.evaluate(()=>{future=[hist.at(-1)];render()});
   const after=await page.locator('#undo').boundingBox();assert.equal(after.x,a.x);assert.equal(after.y,a.y);
  }
 }
 await page.evaluate(()=>{lang='en';applyLanguage();clockChoice=0;mode='brandubh';opponent='ai';human=2;start();stop();render()});
 await page.screenshot({path:'previews/aligned-game.png'});
-console.log('Stable undo/redo positions, left title, bottom status and aligned localized player cards OK');
+console.log('Stable undo/redo positions, left title, bottom status and compact localized player rows on correct sides of board OK');
 
 await page.evaluate(()=>{menu();setup('brandubh')});
 await page.locator('#opponents [data-value="ai"]').click();
@@ -246,4 +250,20 @@ await page.evaluate(()=>menu());await page.evaluate(()=>resume('brandubh','ai'))
 await page.evaluate(()=>{menu();$('statsBtn').click()});assert.equal(await page.locator('#statsLevel option[value="3"]').textContent(),'Impossible');
 await page.locator('#statsBack').click();
 console.log('Impossible selection, saved match, player card and statistics filter OK');
+// Board-first layout at phone widths, in both themes, all three board sizes,
+ // both player colors and with/without clocks. No clocks when disabled.
+for(const theme of ['light','dark']){
+ for(const [modeName,width,height] of [['brandubh',320,600],['tablut',390,844],['berserk',360,640]]){
+  for(const humanSide of [1,2]){
+   await page.setViewportSize({width,height});
+   await page.evaluate(({modeName,humanSide,theme})=>{document.documentElement.dataset.theme=theme;clockChoice=5;mode=modeName;opponent='ai';human=humanSide;level=3;start();stop();render()},{modeName,humanSide,theme});
+   const fit=await page.evaluate(()=>{const top=$('aiTop').getBoundingClientRect(),bottom=$('aiBottom').getBoundingClientRect(),board=$('boardWrap').getBoundingClientRect(),controls=$('gameActions').getBoundingClientRect();return {top:top.bottom<=board.top+1,bottom:bottom.top>=board.bottom-1,controls:controls.top>=bottom.bottom-1,wide:document.documentElement.scrollWidth<=innerWidth+1,visible:controls.bottom<=innerHeight+1,clock:[...document.querySelectorAll('.aiSeat .aiClock')].every(x=>!x.hidden&&x.getBoundingClientRect().width<80&&Math.abs(x.getBoundingClientRect().top-x.parentElement.getBoundingClientRect().top)<3),side:$('aiBottom').firstElementChild.id}});
+   assert(fit.top&&fit.bottom&&fit.controls&&fit.wide&&fit.visible&&fit.clock,JSON.stringify(fit));assert.equal(fit.side,humanSide===1?'blackCard':'whiteCard');
+   await page.screenshot({path:'previews/compact-'+theme+'-'+modeName+'-'+humanSide+'.png'});
+  }
+ }
+}
+await page.evaluate(()=>{clockChoice=5;mode='tablut';opponent='local';start();stop();render()});
+assert.equal(await page.locator('#blackLocalCount').textContent(),'16/16');assert.equal(await page.locator('#whiteLocalCount').textContent(),'8/8');assert(await page.locator('#aiTop').isHidden());
+console.log('Compact match rows: light/dark, 320/360/390px, all board sizes, both colors, timer pills, local counts OK');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}
