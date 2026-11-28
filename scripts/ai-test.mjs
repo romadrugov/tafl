@@ -48,3 +48,8 @@ console.log('AI tactical safety and all mode/side/level checks passed');
  let q=g;for(const s of ['D7-D5','D4-E4','B4-B5'])q=e.record(q,parse(s));
  for(let l=1;l<=3;l++){const r=check(e,q,l);assert(mate2(q));const w=e.record(q,r.m);assert(w.win===2||!w.win&&e.moves(w.b,1).every(b=>immediate(e.record(w,b))), 'level '+l+' misses forced exit');}
 }
+
+for(const mode of ['historical','ardri','tawlbwrdd','magpie','berserk']){
+ const e=ctx.Engine(mode),g=e.start(),q=e.record(g,e.moves(g.b,g.turn)[0]);
+ for(const pos of [g,q])for(let l=0;l<=3;l++){const r=check(e,pos,l);const next=e.record(pos,r.m);assert.equal(next.turn,3-pos.turn);console.log('New variant AI',mode,pos.turn,l,r.depth,r.nodes)}
+}

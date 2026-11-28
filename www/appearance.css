@@ -227,3 +227,6 @@ main.localGame.resultGame .boardWrap{width:min(100%,calc(100dvh - var(--tafl-top
 /* Four difficulty levels: balanced two-by-two choices, no squeezed labels. */
 #setupCard #levels{grid-template-columns:repeat(2,minmax(0,1fr))}
 #levels [data-value="3"]{font-weight:750}
+
+/* Berserk officers and the optional end-of-chain action */
+.piece.commander,.piece.knight{display:grid;place-items:center;font-weight:800;font-size:clamp(9px,2.8vw,15px);line-height:1}.piece.commander{color:#f5cf79}.piece.knight{color:#79501f}.preview .piece.commander,.preview .piece.knight{font-size:clamp(7px,2vw,12px)}#finishChain{grid-column:1/-1;min-height:40px;padding:7px 12px;font-size:14px}#finishChain[hidden]{display:none!important}
