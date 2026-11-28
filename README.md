@@ -151,3 +151,7 @@ Structured tutorial: game premise and annotated board first, then movement, capt
 ## 0.11.2
 
 Refined tutorial typography and spacing, persistent previous/restart navigation, resume from the first page or any later step, and a completion screen with a direct first-match action (Brandubh, white, easy, untimed). Uses the existing save replacement confirmation. Completed status is preserved when replaying.
+
+## 0.11.3
+
+Top-aligned tutorial content, larger readable lesson titles and body text, aligned header/progress/footer gutters, compact navigation and an adaptive square board using the available content height. Preserves safe-area insets, landscape layout, course logic, progress and saves.

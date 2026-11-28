@@ -335,7 +335,28 @@ assert(await page.locator('#tutorialPage').isVisible());assert.equal(await page.
 assert.equal(await page.locator('#tutorialBoard .piece').count(),13);
 // Leaving even the very first page must produce a resumable course.
 await page.locator('#tutorialBack').click();assert.equal(await page.locator('.tutorialStart').textContent(),'Продолжить обучение');await page.locator('.tutorialStart').click();assert.equal(await page.locator('#tutorialCounter').textContent(),'1 / 28');assert(await page.locator('#tutorialPrevious').isDisabled());
+// Verify that the actual lesson text is anchored near the progress bar,
+ // rather than vertically centering the entire lesson. Exercise every page
+ // in each language on representative phone sizes and in landscape.
+const tutorialInsets=await page.evaluate(()=>Object.fromEntries(['--tafl-top','--tafl-bottom'].map(k=>[k,document.documentElement.style.getPropertyValue(k)])));
+for(const [width,height,top,bottom] of [[320,640,24,20],[390,870,62,24],[412,915,30,24],[844,390,0,0]]){
+ await page.setViewportSize({width,height});
+ await page.evaluate(([top,bottom])=>{document.documentElement.style.setProperty('--tafl-top',top+'px');document.documentElement.style.setProperty('--tafl-bottom',bottom+'px')},[top,bottom]);
+ for(const locale of ['en','es','ru']){
+  for(let i=0;i<28;i++){
+   const m=await page.evaluate(([locale,i])=>{
+    lang=locale;loadTutorialLesson(i);
+    const rect=id=>$(id).getBoundingClientRect(),board=rect('tutorialBoard'),copy=rect('tutorialInstruction'),chapter=rect('tutorialChapter'),counter=rect('tutorialCounter'),footer=document.querySelector('.tutorialFooter').getBoundingClientRect();
+    return {id:tutorialLessons()[i].id,board:board.width,square:Math.abs(board.width-board.height)<1.5,footer:footer.bottom<=innerHeight+1,overlap:innerWidth<innerHeight&&board.top<copy.bottom-1,gap:chapter.top-counter.bottom,body:parseFloat(getComputedStyle($('tutorialInstruction')).fontSize),meta:parseFloat(getComputedStyle($('tutorialChapter')).fontSize),heading:parseFloat(getComputedStyle($('tutorialLessonTitle')).fontSize)};
+   },[locale,i]);
+   assert(m.square&&m.footer&&!m.overlap&&m.board>=135&&m.gap>=0&&m.gap<=30&&m.body>=15&&m.meta>=13&&m.heading>=24,JSON.stringify({width,height,locale,...m}));
+  }
+ }
+}
+await page.evaluate(insets=>{for(const [k,v] of Object.entries(insets))v?document.documentElement.style.setProperty(k,v):document.documentElement.style.removeProperty(k);lang='ru';loadTutorialLesson(0)},tutorialInsets);
+await page.setViewportSize({width:390,height:844});
 await page.screenshot({path:'previews/tutorial-intro.png'});
+console.log('Tutorial typography and geometry: 336 page/locale/viewport combinations verified');
 for(const [width,height] of [[320,640],[390,844],[844,390]]){await page.setViewportSize({width,height});const fit=await page.evaluate(()=>{const a=$('tutorialBack').getBoundingClientRect(),b=$('tutorialPrevious').getBoundingClientRect(),r=$('tutorialRestart').getBoundingClientRect();return a.top>=0&&r.right<=innerWidth+1&&b.bottom<=innerHeight+1&&document.documentElement.scrollWidth<=innerWidth+1});assert(fit,'tutorial navigation fits '+width+'x'+height)}await page.setViewportSize({width:390,height:844});
 await page.locator('#tutorialNext').click();assert.equal(await page.locator('#tutorialCounter').textContent(),'2 / 28');
 assert.equal(await page.locator('#tutorialBoard .tutorialTarget').count(),5);
