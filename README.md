@@ -107,3 +107,7 @@ Always-visible Undo and Redo (disabled when unavailable, including timed matches
 ## 0.9.12
 
 Stronger Medium/Hard and new Impossible level. Exact king-exit fork proof supplements minimax, deeper optional search with variant-scaled budgets, no deliberate errors outside Easy. Impossible is not a solved-game guarantee. Existing level IDs, saves, stats, package and signing preserved. Regression includes actual player-reported game.
+
+## 0.10.0
+
+Adds Historical Hnefatafl (11×11, throne), Ard Rí (7×7, throneless), Tawlbwrdd (11×11 Lewis Cross, throneless), Magpie (7×7 slow king), Berserk (11×11 commanders, knight, optional capture chains). Rules based on https://aagenielsen.dk/tafl_rules.php and https://abstractplay.com/wiki/doku.php?id=games:tafl. For historical and Berserk profiles third repetition is a white loss as digital approximation of perpetual repetition. Old variant IDs and signing unchanged. Berserk full turns are paths, stored as one history entry; draft sequences survive save/resume. Sea Battle deferred.

@@ -29,3 +29,25 @@ for(const [mode,n,black,white] of [['brandubh',7,8,4],['tablut',9,16,8],['hnefat
  }
  console.log('Copenhagen exit-fort invariant, published examples, rotations and negative cases OK');
 }
+
+for(const [mode,n] of [['historical',11],['ardri',7],['tawlbwrdd',11],['magpie',7],['berserk',11]]) {
+ const e=ctx.Engine(mode),g=e.start();
+ assert.equal(e.n,n);assert.equal(g.b.filter(x=>e.S[x]===1).length,n===7?8:24);assert.equal(g.b.filter(x=>e.S[x]===2).length,n===7?5:13);
+ assert.equal(e.goal(1),['historical','ardri','tawlbwrdd'].includes(mode));
+ assert.equal(e.restricted(e.T),!['ardri','tawlbwrdd'].includes(mode));
+ let q=g;for(let i=0;i<6&&!q.win;i++){const m=e.moves(q.b,q.turn)[0];q=e.record(q,m)}
+ console.log(mode,'opening, moves and replay OK');
+}
+{
+ const e=ctx.Engine('magpie'),b=Array(e.L).fill(0);b[24]=3;assert.equal(e.dest(b,24).length,4);b.fill(0);b[3]=3;b[2]=b[4]=1;b[17]=1;assert.equal(e.apply(b,[17,10]).win,1);
+}
+{
+ const e=ctx.Engine('berserk'),idx=(x,y)=>y*11+x;
+ const b=Array(e.L).fill(0);b[idx(1,2)]=5;b[idx(2,2)]=1;b[idx(4,2)]=1;b[idx(5,5)]=3;b[idx(9,9)]=1;
+ const g={...e.start(),b,turn:2,keys:[b.join('')+'2']},m=[idx(1,2),idx(3,2),idx(5,2)];
+ assert(e.moves(b,2).some(x=>x.join()===m.join()),'chain generated');const q=e.record(g,m);assert.equal(q.cap.length,2);assert.equal(q.turn,1);assert.equal(q.log.length,1);assert.equal(q.b[idx(5,2)],5);
+ assert.throws(()=>e.record(g,[idx(1,2),idx(3,2),idx(3,3)]),'no quiet continuation');
+ assert.equal(e.initial().filter(p=>p===4).length,4);assert.equal(e.initial().filter(p=>p===5).length,1);
+ let c=Array(e.L).fill(0);c[idx(3,3)]=3;c[idx(2,3)]=4;c[idx(4,6)]=4;assert.equal(e.apply(c,[idx(4,6),idx(4,3)]).win,1);
+ console.log('Berserk jumps, optional capture chains, commander capture and atomic history OK');
+}
