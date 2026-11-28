@@ -348,8 +348,8 @@ for(let j=1;j<25;j++){
   if(step===0)assert.equal(actual.selected,i,JSON.stringify(actual));
   else assert.deepEqual(actual.path,l.path.slice(0,step+1),JSON.stringify({step,expected:l.path,actual}));
  }
- assert(await page.locator('#tutorialNext').isEnabled(),'lesson '+l.index);
- if(j===18)await page.screenshot({path:'previews/tutorial-chain.png'});
+ assert(await page.locator('#tutorialNext').isEnabled(),JSON.stringify(await page.evaluate(()=>({lesson:tutorialLessons()[tutorialSession.index].id,done:tutorialSession.done,disabled:$('tutorialNext').disabled,message:tutorialSession.message}))));
+ if(j===18||j===19){await page.evaluate(()=>renderTutorial());assert(await page.locator('#tutorialNext').isEnabled());assert.deepEqual(errs,[]);await page.screenshot({path:'previews/tutorial-'+(j===18?'chain':'commanders')+'.png'});}
  await page.locator('#tutorialNext').click();
 }
 assert(await page.locator('#tutorialPage').isHidden());assert(await page.locator('.tutorialLearned').isVisible());

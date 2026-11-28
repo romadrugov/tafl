@@ -37,7 +37,7 @@ function renderTutorial(){
  $('tutorialTitle').textContent=tw('title');$('tutorialBack').setAttribute('aria-label',tw('back'));$('tutorialCounter').textContent=(s.index+1)+' / '+list.length;$('tutorialProgressBar').style.width=((s.index+(s.done?1:0))/list.length*100)+'%';
  $('tutorialLessonTitle').textContent=l.copy[offset];$('tutorialVariant').textContent=variants[l.variant].title;$('tutorialInstruction').textContent=l.copy[offset+1];
  const board=$('tutorialBoard');board.style.gridTemplateColumns='repeat('+e.n+',minmax(0,1fr))';if(board.children.length!==e.L){board.replaceChildren();for(let i=0;i<e.L;i++){const cell=document.createElement('button');cell.type='button';cell.dataset.cell=String(i);cell.onclick=()=>tutorialClick(i);board.append(cell)}}
- const from=s.path.at(-1)??s.selected,targets=from>=0?(s.path.length?e.continuations(s.b,from):e.dest(s.b,from)):[];
+ const from=s.path.at(-1)??s.selected,targets=!s.done&&from>=0?(s.path.length?e.continuations(s.b,from):e.dest(s.b,from)):[];
  const expectedFrom=l.path[Math.max(0,s.path.length-1)],expectedTo=l.path[s.path.length||1];
  s.b.forEach((p,i)=>{const cell=board.children[i];cell.className='sq '+((i%e.n+Math.floor(i/e.n))%2?'alt ':'')+(e.goal(i)?'goal ':'')+(e.restricted(i)?'restricted ':'')+(s.selected===i?'sel ':'')+(s.done&&s.cap.includes(i)?'cap ':'');
  if(!s.done&&s.hint&&((from!==expectedFrom&&i===expectedFrom)||(from===expectedFrom&&i===expectedTo)))cell.classList.add('tutorialTarget');
