@@ -19,7 +19,7 @@ function loadTutorialLesson(i){const l=tutorialLessons()[i];tutorialSession={ind
 function closeTutorial(){if(!tutorialSession)return;$('tutorialPage').hidden=true;tutorialSession=null;settings();refreshSave()}
 function tutorialClick(i){
  const s=tutorialSession,l=tutorialLessons()[s.index],e=l.engine;if(s.done)return;
- const from=l.path[s.path.length-1]??s.selected;
+ const from=s.path.at(-1)??s.selected;
  if(!s.path.length&&e.S[s.b[i]]===l.side){s.selected=i;s.message='';renderTutorial();return}
  if(from<0){s.message=tw('choose');renderTutorial();return}
  const allowed=s.path.length?e.continuations(s.b,from):e.dest(s.b,from);
@@ -36,13 +36,13 @@ function renderTutorial(){
  const s=tutorialSession;if(!s)return;const list=tutorialLessons(),l=list[s.index],e=l.engine,offset=lang==='ru'?2:lang==='es'?4:0;
  $('tutorialTitle').textContent=tw('title');$('tutorialBack').setAttribute('aria-label',tw('back'));$('tutorialCounter').textContent=(s.index+1)+' / '+list.length;$('tutorialProgressBar').style.width=((s.index+(s.done?1:0))/list.length*100)+'%';
  $('tutorialLessonTitle').textContent=l.copy[offset];$('tutorialVariant').textContent=variants[l.variant].title;$('tutorialInstruction').textContent=l.copy[offset+1];
- const board=$('tutorialBoard');board.style.gridTemplateColumns='repeat('+e.n+',minmax(0,1fr))';board.replaceChildren();
+ const board=$('tutorialBoard');board.style.gridTemplateColumns='repeat('+e.n+',minmax(0,1fr))';if(board.children.length!==e.L){board.replaceChildren();for(let i=0;i<e.L;i++){const cell=document.createElement('button');cell.type='button';cell.dataset.cell=String(i);cell.onclick=()=>tutorialClick(i);board.append(cell)}}
  const from=s.path.at(-1)??s.selected,targets=from>=0?(s.path.length?e.continuations(s.b,from):e.dest(s.b,from)):[];
  const expectedFrom=l.path[Math.max(0,s.path.length-1)],expectedTo=l.path[s.path.length||1];
- s.b.forEach((p,i)=>{const cell=document.createElement('button');cell.type='button';cell.className='sq '+((i%e.n+Math.floor(i/e.n))%2?'alt ':'')+(e.goal(i)?'goal ':'')+(e.restricted(i)?'restricted ':'')+(s.selected===i?'sel ':'')+(s.done&&s.cap.includes(i)?'cap ':'');
- if(!s.done&&s.hint&&((from<0&&i===expectedFrom)||(from===expectedFrom&&i===expectedTo)))cell.classList.add('tutorialTarget');
- cell.dataset.cell=String(i);cell.setAttribute('aria-label',e.name(i));cell.innerHTML=squareIcon(e,i)+(p?'<span class="piece '+pieceClass(p)+'">'+pieceIcon(p)+'</span>':!s.done&&targets.includes(i)?'<span class="dot"></span>':'');cell.onclick=()=>tutorialClick(i);board.append(cell)});
- $('tutorialFeedback').textContent=s.message|| (s.path.length&&!s.done?tw('chain'):s.hint?tw(from<0?'select':'target'):tw('choose'));$('tutorialFeedback').classList.toggle('correct',s.done);
+ s.b.forEach((p,i)=>{const cell=board.children[i];cell.className='sq '+((i%e.n+Math.floor(i/e.n))%2?'alt ':'')+(e.goal(i)?'goal ':'')+(e.restricted(i)?'restricted ':'')+(s.selected===i?'sel ':'')+(s.done&&s.cap.includes(i)?'cap ':'');
+ if(!s.done&&s.hint&&((from!==expectedFrom&&i===expectedFrom)||(from===expectedFrom&&i===expectedTo)))cell.classList.add('tutorialTarget');
+ cell.dataset.cell=String(i);cell.setAttribute('aria-label',e.name(i));cell.innerHTML=squareIcon(e,i)+(p?'<span class="piece '+pieceClass(p)+'">'+pieceIcon(p)+'</span>':!s.done&&targets.includes(i)?'<span class="dot"></span>':'');});
+ $('tutorialFeedback').textContent=s.message|| (s.path.length&&!s.done?tw('chain'):s.hint?tw(from!==expectedFrom?'select':'target'):tw('choose'));$('tutorialFeedback').classList.toggle('correct',s.done);
  $('tutorialHint').textContent=tw('hint');$('tutorialHint').hidden=s.done||s.hint;$('tutorialNext').textContent=tw(s.index===list.length-1?'finish':'next');$('tutorialNext').disabled=!s.done;
 }
 function initTutorial(){$('tutorialVisible').checked=tutorialProgress.visible;$('tutorialVisible').onchange=()=>setTutorialVisible($('tutorialVisible').checked);$('tutorialBack').onclick=closeTutorial;$('tutorialHint').onclick=()=>{const s=tutorialSession;s.hint=true;s.message='';s.selected=-1;renderTutorial()};$('tutorialNext').onclick=()=>{const s=tutorialSession;if(!s?.done)return;if(s.index+1<tutorialLessons().length)loadTutorialLesson(s.index+1);else closeTutorial()}}

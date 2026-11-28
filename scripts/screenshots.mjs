@@ -342,9 +342,14 @@ assert.equal(await page.locator('#tutorialCounter').textContent(),'2 / 25');
 for(let j=1;j<25;j++){
  const l=await page.evaluate(()=>{const s=tutorialSession,l=tutorialLessons()[s.index];return {path:l.path,quiz:l.quiz,index:s.index}});
  if(l.quiz)assert(await page.locator('#tutorialHint').isVisible());
- for(const i of l.path)await page.locator('#tutorialBoard [data-cell="'+i+'"]').click();
+ for(const [step,i] of l.path.entries()){
+  await page.locator('#tutorialBoard [data-cell="'+i+'"]').click();
+  const actual=await page.evaluate(()=>({selected:tutorialSession.selected,path:tutorialSession.path,done:tutorialSession.done,message:tutorialSession.message,id:tutorialLessons()[tutorialSession.index].id}));
+  if(step===0)assert.equal(actual.selected,i,JSON.stringify(actual));
+  else assert.deepEqual(actual.path,l.path.slice(0,step+1),JSON.stringify({step,expected:l.path,actual}));
+ }
  assert(await page.locator('#tutorialNext').isEnabled(),'lesson '+l.index);
- if(j===17)await page.screenshot({path:'previews/tutorial-chain.png'});
+ if(j===18)await page.screenshot({path:'previews/tutorial-chain.png'});
  await page.locator('#tutorialNext').click();
 }
 assert(await page.locator('#tutorialPage').isHidden());assert(await page.locator('.tutorialLearned').isVisible());

@@ -436,3 +436,8 @@ main.inGame:not(.localGame).resultGame #game{--match-board-width:min(100%,max(19
 #tutorialNext{flex:1;min-width:0}
 #tutorialHint[hidden]{display:none}
 @media(orientation:landscape) and (max-height:550px){.tutorialContent{display:grid;grid-template-columns:minmax(140px,1fr) minmax(0,1fr);grid-template-rows:1fr auto auto;width:100%;max-width:760px;gap:8px 16px;padding:8px 16px}.tutorialIntro{grid-column:2;grid-row:1;align-self:end}#tutorialBoard{grid-column:1;grid-row:1/4;width:min(100%,max(140px,calc(100dvh - var(--tafl-top,0px) - var(--tafl-bottom,0px) - 95px)))}#tutorialFeedback{grid-column:2;grid-row:2}.tutorialActions{grid-column:2;grid-row:3}}
+
+/* Stable exercise geometry between selection, errors and feedback. */
+#tutorialFeedback{height:42px;min-height:42px;flex-shrink:0}
+#tutorialBoard .sq{transition:none}
+#tutorialBoard .sq:active{filter:none}

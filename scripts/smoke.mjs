@@ -57,3 +57,15 @@ for(const [mode,n] of [['historical',11],['ardri',7],['tawlbwrdd',11],['magpie',
 }
 
 const lessonSrc=readFileSync('www/tutorial-data.js','utf8');vm.runInContext(lessonSrc+'\nthis.TutorialLessons=TutorialLessons;',ctx);const lessons=ctx.TutorialLessons(ctx.Engine);assert.equal(lessons.length,25);console.log('All tutorial positions and expected engine outcomes validated');
+
+vm.runInContext("let lang='en';const localStorage={getItem:()=>null,setItem:()=>{}};",ctx);vm.runInContext(readFileSync('www/tutorial.js','utf8'),ctx);vm.runInContext(`
+renderTutorial=()=>{};
+for(const locale of ['en','es','ru']){
+ lang=locale;
+ for(const [i,l] of tutorialLessons().entries()){
+  loadTutorialLesson(i);
+  for(const x of l.path)tutorialClick(x);
+  if(!tutorialSession.done||tutorialSession.path.join()!==l.path.join())throw Error(locale+' '+l.id+' '+tutorialSession.message);
+ }
+}
+`,ctx);console.log('All 75 localized tutorial click sequences passed');
