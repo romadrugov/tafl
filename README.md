@@ -135,3 +135,7 @@ Successful Android builds from `main` automatically publish their signed APK and
 ## 0.10.5
 
 Improve dark-theme black player token contrast, show current turn with a subtle highlighted player row, accent line and dot, and place compact undo/redo buttons beside the human's information in AI matches. Keep the board centered, full result controls, Berserk continuation action, accessible turn announcements and local face-to-face toolbar. No changes to game rules, AI, clocks, save schema or release signing.
+
+## 0.10.6
+
+Padded active player highlight; result title and reason above the board in AI games. Timed games still disallow history navigation during an ordinary live match, but allow undo/redo after the result, restore per-position clocks and permit a new branch. Timeout is reversible; old saves lacking historical clock checkpoints use the saved remaining time as fallback. Result statistics follow undo/redo. No engine changes.

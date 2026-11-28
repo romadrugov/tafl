@@ -382,3 +382,31 @@ main.inGame:not(.localGame) #gameActions.ended .status{font-size:clamp(18px,5vw,
  .aiSeat .playerCard{gap:6px}
  .aiSeat .playerInfo,.aiSeat .playerCard.activePlayer .playerInfo{padding-left:6px}
 }
+
+/* 0.10.6: more breathing room around the active player, result above the
+   board, and result actions below. All rows keep identical geometry. */
+.aiSeat .playerCard{padding:6px 9px;min-height:48px;border-radius:10px;border:1px solid transparent;gap:9px}
+.aiSeat .playerCard.activePlayer{border-color:color-mix(in srgb,var(--gold) 38%,transparent);background:color-mix(in srgb,var(--gold) 8%,transparent)}
+.aiSeat .playerInfo,.aiSeat .playerCard.activePlayer .playerInfo{padding-left:9px}
+.aiSeat .playerCard .count{line-height:1.15}
+.matchResult{min-width:0;text-align:center;align-self:center;width:100%;padding:4px 0;overflow-wrap:anywhere}
+.matchResult[hidden]{display:none!important}
+#resultHeadline{font-size:clamp(17px,5vw,22px);font-weight:800;line-height:1.2}
+#resultReason{font-size:13px;color:var(--muted);line-height:1.25;margin-top:4px}
+main.inGame:not(.localGame) #gameActions.ended .statusWrap{display:none}
+main.inGame:not(.localGame).resultGame #game{--match-board-width:min(100%,max(190px,calc(var(--match-height) - 340px)))}
+@media(max-width:350px),(max-height:550px) and (orientation:landscape){
+ .aiSeat .playerCard{padding:5px 6px;gap:6px}
+ .aiSeat .playerInfo,.aiSeat .playerCard.activePlayer .playerInfo{padding-left:6px}
+}
+@media(max-height:700px) and (orientation:portrait){
+ main.inGame:not(.localGame).resultGame #game{--match-board-width:min(100%,max(160px,calc(var(--match-height) - 365px)))}
+ #resultHeadline{font-size:17px}
+ #resultReason{font-size:12px}
+}
+@media(max-height:550px) and (orientation:landscape) and (min-width:500px){
+ main.inGame:not(.localGame) #game{grid-template-rows:48px minmax(0,1fr) 48px;--match-board-width:min(100%,max(140px,calc(var(--match-height) - 168px)))}
+ main.inGame:not(.localGame).resultGame #game{--match-board-width:min(100%,max(140px,calc(var(--match-height) - 168px)))}
+ main.inGame:not(.localGame) #matchResult{grid-column:2;grid-row:2;align-self:start}
+ main.inGame:not(.localGame).resultGame #gameActions{grid-row:2/4;align-self:end}
+}

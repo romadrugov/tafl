@@ -213,7 +213,7 @@ for(const kind of ['ai','local']){
 await page.evaluate(()=>{clockChoice=5;mode='brandubh';opponent='local';start()});
 assert.equal(await page.locator('#gameActions').isVisible(),true);
 await page.evaluate(()=>{clockStarted-=400000;clockCheck()});
-assert.equal(await page.locator('#undo').isVisible(),true);assert.equal(await page.locator('#undo').isDisabled(),true);assert.equal(await page.locator('#resultLog').isVisible(),true);
+assert.equal(await page.locator('#undo').isVisible(),true);assert.equal(await page.locator('#undo').isEnabled(),true);assert.equal(await page.locator('#resultLog').isVisible(),true);
 console.log('Bottom undo/redo, result-only log, result undo/redo and timed-game restrictions OK');
 
 for(const locale of ['en','es','ru']){
@@ -226,7 +226,7 @@ for(const locale of ['en','es','ru']){
   const black=await page.locator('#blackCard').boundingBox(),white=await page.locator('#whiteCard').boundingBox(),bc=await page.locator('#bc').boundingBox(),wc=await page.locator('#wc').boundingBox();
   const board=await page.locator('#boardWrap').boundingBox(),top=humanSide===1?white:black,bottom=humanSide===1?black:white;
   assert(Math.abs(black.height-white.height)<1&&top.y+top.height<=board.y+1&&bottom.y>=board.y+board.height-1);
-  assert(top.height<=46&&bottom.height<=46&&Math.abs(black.x-white.x)<1);
+  assert(top.height<=54&&bottom.height<=54&&Math.abs(black.x-white.x)<1);
   assert(await page.locator(humanSide===1?'#blackMeta':'#whiteMeta').isHidden());
   assert(await page.locator('#blackAiClock').isHidden());assert(await page.locator('#whiteAiClock').isHidden());
   await page.evaluate(()=>{future=[hist.at(-1)];render()});
@@ -309,4 +309,19 @@ for(const theme of ['light','dark']){
 await page.evaluate(()=>{clockChoice=5;opponent='ai';human=1;start();stop();render()});assert(await page.locator('#undo').isDisabled());assert(await page.locator('#redo').isDisabled());
 await page.evaluate(()=>{clockChoice=0;opponent='local';start();stop();render()});assert(await page.locator('#gameActions #moveControls').isVisible());
 console.log('Active turn indicator, compact inline history, timed restrictions and local toolbar verified');
+// Timed results are reversible, including timeout before the first move,
+// exact clock checkpoints, redo of terminal state, and statistics.
+await page.setViewportSize({width:390,height:844});
+await page.evaluate(()=>{clockChoice=5;mode='brandubh';opponent='local';start();clockStarted-=310000;clockCheck()});
+assert(await page.locator('#undo').isEnabled());assert.equal(await page.evaluate(()=>hist.at(-1).timeoutEnd),true);
+await page.locator('#undo').click();assert.equal(await page.evaluate(()=>hist.at(-1).win),0);assert(await page.locator('#redo').isEnabled());assert((await page.evaluate(()=>clockLeft(1)))>298000);
+await page.locator('#redo').click();assert.equal(await page.evaluate(()=>hist.at(-1).win),2);assert.equal(await page.evaluate(()=>clockLeft(1)),0);
+await page.evaluate(()=>{clockChoice=5;mode='brandubh';opponent='ai';human=2;start();stop();const b=Array(e.L).fill(0);b[1]=3;b[24]=1;b[16]=2;const before={...e.start(),b,turn:2,keys:[b.join('')+'2'],clockAt:[0,280000,250000]};hist=[before];future=[];clockReset(5,[0,280000,240000]);hist.push(stampClock(e.record(before,[1,0])));persist();render()});
+assert(await page.locator('#undo').isEnabled());assert(await page.locator('#matchResult').isVisible());
+const result=await page.locator('#matchResult').boundingBox(),board=await page.locator('#board').boundingBox();assert(result.y+result.height<=board.y);
+assert(await page.locator('#resultLog').isVisible());await page.screenshot({path:'previews/timed-result-above-board.png'});
+await page.locator('#undo').click();assert.equal(await page.evaluate(()=>hist.at(-1).win),0);assert(await page.locator('#matchResult').isHidden());assert(await page.locator('#redo').isEnabled());assert((await page.evaluate(()=>clockLeft(2)))>248000);assert.equal(await page.evaluate(()=>clockLeft(1)),280000);
+assert.equal(await page.evaluate(()=>readResults().filter(x=>x.id===gameId).length),0);
+await page.locator('#redo').click();assert.equal(await page.evaluate(()=>hist.at(-1).win),2);assert.equal(await page.evaluate(()=>clockLeft(2)),240000);assert.equal(await page.evaluate(()=>readResults().filter(x=>x.id===gameId).length),1);
+console.log('Timed result rollback, timeout rollback, redo, clock restoration and top result placement OK');
 assert.deepEqual(errs,[]);console.log('Guide, all variants and locales, setup and game smoke test OK')}finally{if(browser)await browser.close();server.close()}
